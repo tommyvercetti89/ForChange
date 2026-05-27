@@ -1,4 +1,8 @@
-# ⚡ ForChange
+<p align="center">
+  <img src="assets/logo.png" alt="ForChange Logo" width="120" height="120">
+</p>
+
+<h1 align="center">ForChange</h1>
 
 <p align="center">
   <strong>A premium, dual-edition image converter for Windows with shell context-menu integrations.</strong>
