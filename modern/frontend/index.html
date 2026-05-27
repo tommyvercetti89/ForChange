@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>ForChange Modern</title>
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <span class="logo-icon">⚡</span>
+                <div class="logo-text">
+                    <h1>ForChange</h1>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="theme-toggle" class="icon-btn" title="Toggle Theme">
+                    <span id="theme-icon">🌙</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Body Grid -->
+        <main class="app-main">
+            <!-- Left Panel: Controls -->
+            <section class="control-panel glass-card">
+                <h2 class="panel-title">Conversion Settings</h2>
+
+                <!-- Format Selection -->
+                <div class="control-group">
+                    <label for="target-format">Target Format</label>
+                    <select id="target-format" class="custom-select">
+                        <option value="PNG">PNG</option>
+                        <option value="JPEG" selected>JPEG</option>
+                        <option value="GIF">GIF</option>
+                        <option value="BMP">BMP</option>
+                        <option value="TIFF">TIFF</option>
+                        <option value="ICO">ICO</option>
+                    </select>
+                </div>
+
+                <!-- Quality / Size -->
+                <div class="control-group" id="quality-size-group">
+                    <div class="label-row">
+                        <label id="quality-size-label" for="quality-size-input">Quality</label>
+                        <span id="quality-size-value">80</span>
+                    </div>
+                    <input type="range" id="quality-size-input" class="custom-slider" min="1" max="100" value="80" />
+                </div>
+
+                <!-- Destination Folder -->
+                <div class="control-group">
+                    <label>Destination Folder</label>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="same-dir-checkbox" checked />
+                        <label for="same-dir-checkbox">Same as source folder</label>
+                    </div>
+                    <div class="folder-input-row" id="folder-picker-row" style="display: none;">
+                        <input type="text" id="dest-folder-path" placeholder="Select output directory..." readonly />
+                        <button id="browse-folder-btn" class="secondary-btn">Browse</button>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <button id="convert-btn" class="primary-btn glow-effect">
+                    <span>⚡ Convert All Files</span>
+                </button>
+            </section>
+
+            <!-- Right Panel: File List and Drop Area -->
+            <section class="file-panel glass-card">
+                <!-- Empty/Drop Zone State -->
+                <div id="drop-zone" class="drop-zone">
+                    <div class="drop-content">
+                        <div class="drop-icon">📂</div>
+                        <h3>Drag & drop images here</h3>
+                        <p>Supports PNG, JPEG, GIF, BMP, TIFF, WebP, ICO</p>
+                        <button id="add-files-btn" class="secondary-btn">Or Select Files</button>
+                    </div>
+                </div>
+
+                <!-- Active File List (Hidden when empty) -->
+                <div id="file-list-container" class="file-list-container" style="display: none;">
+                    <div class="list-header">
+                        <h3>Files to Convert (<span id="file-count">0</span>)</h3>
+                        <div class="list-actions">
+                            <button id="add-more-btn" class="text-btn">➕ Add More</button>
+                            <button id="clear-list-btn" class="text-btn danger-text">🗑 Clear All</button>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="file-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Size</th>
+                                    <th>Format</th>
+                                    <th>Status</th>
+                                    <th class="text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="file-table-body">
+                                <!-- Dynamically populated rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div id="status-bar" class="status-bar">Ready</div>
+        </footer>
+    </div>
+
+    <!-- Script loading -->
+    <div id="app"></div>
+    <script src="./src/main.js" type="module"></script>
+</body>
+</html>
