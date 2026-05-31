@@ -16,6 +16,10 @@
   <img src="https://img.shields.io/badge/License-MIT-emerald?style=for-the-badge" alt="License">
 </p>
 
+<p align="center">
+  <a href="README.md">🇬🇧 English</a> &nbsp;|&nbsp; <a href="README.tr.md">🇹🇷 Türkçe</a>
+</p>
+
 ---
 
 **ForChange** is a highly modular, fast, and lightweight **image, video & audio converter** for Windows. It offers the best of both worlds: a **Classic Win32 Edition** styled after native Windows applications (7-Zip aesthetic), and a **Modern Edition** built with Wails featuring a sleek dark/light UI with smooth animations.
