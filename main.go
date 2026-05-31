@@ -12,10 +12,10 @@ import (
 
 func main() {
 	// Parse command-line flags
-	input := flag.String("i", "", "Path to the input image file")
-	output := flag.String("o", "", "Path to the output image file (optional)")
-	format := flag.String("f", "", "Target image format (png, jpg/jpeg, gif, bmp, tiff, ico)")
-	quality := flag.Int("q", 80, "Encoding quality (1-100, jpeg/jpg) or icon size (16-256, ico)")
+	input := flag.String("i", "", "Path to the input media file")
+	output := flag.String("o", "", "Path to the output media file (optional)")
+	format := flag.String("f", "", "Target format (png, jpg/jpeg, gif, bmp, tiff, ico, mp4, mkv, avi, mov, webm, gif_video, mp3, wav, aac, flac, ogg, m4a)")
+	quality := flag.Int("q", 80, "Encoding quality (1-100) or icon size (16-256, ico)")
 
 	flag.Parse()
 

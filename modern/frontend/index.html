@@ -36,12 +36,42 @@
                 <div class="control-group">
                     <label for="target-format">Target Format</label>
                     <select id="target-format" class="custom-select">
-                        <option value="PNG">PNG</option>
-                        <option value="JPEG" selected>JPEG</option>
-                        <option value="GIF">GIF</option>
-                        <option value="BMP">BMP</option>
-                        <option value="TIFF">TIFF</option>
-                        <option value="ICO">ICO</option>
+                        <optgroup label="Images">
+                            <option value="PNG">PNG</option>
+                            <option value="JPEG" selected>JPEG</option>
+                            <option value="GIF">GIF (Image)</option>
+                            <option value="BMP">BMP</option>
+                            <option value="TIFF">TIFF</option>
+                            <option value="ICO">ICO</option>
+                        </optgroup>
+                        <optgroup label="Videos">
+                            <option value="MP4">MP4</option>
+                            <option value="MKV">MKV</option>
+                            <option value="AVI">AVI</option>
+                            <option value="MOV">MOV</option>
+                            <option value="WEBM">WEBM</option>
+                            <option value="GIF_VIDEO">GIF (from Video)</option>
+                        </optgroup>
+                        <optgroup label="Audios">
+                            <option value="MP3">MP3</option>
+                            <option value="WAV">WAV</option>
+                            <option value="AAC">AAC</option>
+                            <option value="FLAC">FLAC</option>
+                            <option value="OGG">OGG</option>
+                            <option value="M4A">M4A</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <!-- Video Resolution (visible only for video targets) -->
+                <div class="control-group" id="resolution-group" style="display: none;">
+                    <label for="video-resolution">Video Resolution</label>
+                    <select id="video-resolution" class="custom-select">
+                        <option value="original" selected>Original</option>
+                        <option value="1080p">1080p (FHD)</option>
+                        <option value="720p">720p (HD)</option>
+                        <option value="480p">480p (SD)</option>
+                        <option value="360p">360p</option>
                     </select>
                 </div>
 
@@ -79,8 +109,8 @@
                 <div id="drop-zone" class="drop-zone">
                     <div class="drop-content">
                         <div class="drop-icon">📂</div>
-                        <h3>Drag & drop images here</h3>
-                        <p>Supports PNG, JPEG, GIF, BMP, TIFF, WebP, ICO</p>
+                        <h3>Drag & drop media files here</h3>
+                        <p>Supports Images, Videos, and Audio Files</p>
                         <button id="add-files-btn" class="secondary-btn">Or Select Files</button>
                     </div>
                 </div>

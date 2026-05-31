@@ -29,6 +29,8 @@ const addFilesBtn = document.getElementById('add-files-btn');
 const addMoreBtn = document.getElementById('add-more-btn');
 const clearListBtn = document.getElementById('clear-list-btn');
 const statusBar = document.getElementById('status-bar');
+const resolutionGroup = document.getElementById('resolution-group');
+const videoResolutionSelect = document.getElementById('video-resolution');
 
 // 1. Theme Management
 const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -48,14 +50,37 @@ function updateThemeIcon(theme) {
 }
 
 // 2. Format Selection Logic (Dynamic Label & Slider Settings)
+const videoFormats = ['MP4', 'MKV', 'AVI', 'MOV', 'WEBM', 'GIF_VIDEO'];
+const audioFormats = ['MP3', 'WAV', 'AAC', 'FLAC', 'OGG', 'M4A'];
+
 targetFormatSelect.addEventListener('change', () => {
     const format = targetFormatSelect.value;
+    
+    // Manage resolution visibility
+    if (videoFormats.includes(format)) {
+        resolutionGroup.style.display = 'flex';
+    } else {
+        resolutionGroup.style.display = 'none';
+    }
+
     if (format === 'ICO') {
         qualitySizeLabel.innerText = 'Size (px)';
         qualitySizeInput.min = '16';
         qualitySizeInput.max = '256';
         qualitySizeInput.value = '256';
         qualitySizeValue.innerText = '256';
+    } else if (videoFormats.includes(format)) {
+        qualitySizeLabel.innerText = 'Video Quality (CRF)';
+        qualitySizeInput.min = '1';
+        qualitySizeInput.max = '100';
+        qualitySizeInput.value = '80';
+        qualitySizeValue.innerText = '80';
+    } else if (audioFormats.includes(format)) {
+        qualitySizeLabel.innerText = 'Audio Quality (Bitrate)';
+        qualitySizeInput.min = '1';
+        qualitySizeInput.max = '100';
+        qualitySizeInput.value = '80';
+        qualitySizeValue.innerText = '80';
     } else {
         qualitySizeLabel.innerText = 'Quality';
         qualitySizeInput.min = '1';
@@ -252,6 +277,7 @@ convertBtn.addEventListener('click', async () => {
     const qualityOrSize = parseInt(qualitySizeInput.value);
     const useSource = sameDirCheckbox.checked;
     const destDir = destFolderPathInput.value;
+    const resolution = videoResolutionSelect.value;
 
     if (!useSource && !destDir) {
         alert('Please select a destination folder.');
@@ -267,6 +293,7 @@ convertBtn.addEventListener('click', async () => {
     browseFolderBtn.disabled = true;
     clearListBtn.disabled = true;
     addMoreBtn.disabled = true;
+    videoResolutionSelect.disabled = true;
 
     renderFileList();
     updateStatus('Conversion started...');
@@ -279,7 +306,7 @@ convertBtn.addEventListener('click', async () => {
         renderFileList();
 
         try {
-            await ConvertFile(fileList[i].path, format, qualityOrSize, useSource, destDir);
+            await ConvertFile(fileList[i].path, format, qualityOrSize, useSource, destDir, resolution);
             fileList[i].status = 'Success';
             successCount++;
         } catch (err) {
@@ -299,6 +326,7 @@ convertBtn.addEventListener('click', async () => {
     browseFolderBtn.disabled = false;
     clearListBtn.disabled = false;
     addMoreBtn.disabled = false;
+    videoResolutionSelect.disabled = false;
 
     renderFileList();
     updateStatus(`Conversion finished. Success: ${successCount}, Failed: ${failCount}`);

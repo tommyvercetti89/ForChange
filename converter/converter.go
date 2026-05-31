@@ -105,3 +105,45 @@ func ConvertImage(inputPath, outputPath, targetFormat string, qualityOrSize int)
 
 	return nil
 }
+
+// Convert is the main entry point that determines the input file type and routes the task
+// to either ConvertImage (for standard image conversions) or ConvertMedia (for video/audio/GIF conversions via FFmpeg).
+func Convert(inputPath, outputPath, targetFormat string, qualityOrSize int, resolution string) error {
+	inputPathType := GetFileType(inputPath)
+	targetFormatClean := strings.ToLower(strings.TrimSpace(targetFormat))
+
+	// Normalize format strings
+	if targetFormatClean == "jpeg" {
+		targetFormatClean = "jpg"
+	}
+	if targetFormatClean == "gif (image)" {
+		targetFormatClean = "gif"
+	}
+	if targetFormatClean == "gif (video)" || targetFormatClean == "gif_video" {
+		targetFormatClean = "gif_video"
+	}
+
+	// Determine if target format is a media (video/audio) format
+	isMediaTarget := false
+	switch targetFormatClean {
+	case "mp4", "mkv", "avi", "mov", "webm", "gif_video", "mp3", "wav", "aac", "flac", "ogg", "m4a":
+		isMediaTarget = true
+	}
+
+	// Validate media/image compatibility
+	if inputPathType == "audio" && !isMediaTarget {
+		return fmt.Errorf("cannot convert audio to an image format (%s)", targetFormatClean)
+	}
+	if inputPathType == "image" && isMediaTarget && targetFormatClean != "gif_video" {
+		return fmt.Errorf("cannot convert image to a video/audio format (%s)", targetFormatClean)
+	}
+
+	// Route based on type
+	if isMediaTarget || inputPathType == "video" || inputPathType == "audio" {
+		return ConvertMedia(inputPath, outputPath, targetFormatClean, qualityOrSize, resolution)
+	}
+
+	// Fallback to pure-Go image conversion
+	return ConvertImage(inputPath, outputPath, targetFormatClean, qualityOrSize)
+}
+

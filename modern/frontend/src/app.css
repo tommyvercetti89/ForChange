@@ -523,3 +523,20 @@ body {
     50% { opacity: 1; }
     100% { opacity: 0.6; }
 }
+
+/* Custom styling for grouped select options */
+optgroup {
+    background-color: var(--bg-hover);
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 11px;
+    padding: 6px;
+}
+
+option {
+    background-color: var(--bg-app);
+    color: var(--text-primary);
+    font-weight: normal;
+    font-size: 13px;
+    padding: 4px;
+}

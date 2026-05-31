@@ -52,8 +52,20 @@ func (a *App) SelectFiles() ([]FileInfo, error) {
 		Title: "Select Images to Convert",
 		Filters: []runtime.FileFilter{
 			{
+				DisplayName: "All Media Files (*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.tiff;*.webp;*.ico;*.mp4;*.mkv;*.avi;*.mov;*.webm;*.mp3;*.wav;*.aac;*.flac;*.ogg;*.m4a)",
+				Pattern:     "*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.tiff;*.webp;*.ico;*.mp4;*.mkv;*.avi;*.mov;*.webm;*.mp3;*.wav;*.aac;*.flac;*.ogg;*.m4a",
+			},
+			{
 				DisplayName: "Image Files (*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.tiff;*.webp;*.ico)",
 				Pattern:     "*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.tiff;*.webp;*.ico",
+			},
+			{
+				DisplayName: "Video Files (*.mp4;*.mkv;*.avi;*.mov;*.webm)",
+				Pattern:     "*.mp4;*.mkv;*.avi;*.mov;*.webm",
+			},
+			{
+				DisplayName: "Audio Files (*.mp3;*.wav;*.aac;*.flac;*.ogg;*.m4a)",
+				Pattern:     "*.mp3;*.wav;*.aac;*.flac;*.ogg;*.m4a",
 			},
 			{
 				DisplayName: "All Files (*.*)",
@@ -103,16 +115,19 @@ func (a *App) GetFileInfo(filePath string) (FileInfo, error) {
 }
 
 // ConvertFile converts a single file to target format with specified options
-func (a *App) ConvertFile(filePath string, targetFormat string, qualityOrSize int, useSource bool, destDir string) error {
+func (a *App) ConvertFile(filePath string, targetFormat string, qualityOrSize int, useSource bool, destDir string, resolution string) error {
 	var outPath string
 	if !useSource {
 		ext := "." + strings.ToLower(targetFormat)
 		if strings.ToLower(targetFormat) == "jpeg" {
 			ext = ".jpg"
 		}
+		if strings.ToLower(targetFormat) == "gif_video" || strings.ToLower(targetFormat) == "gif" {
+			ext = ".gif"
+		}
 		base := filepath.Base(filePath)
 		name := strings.TrimSuffix(base, filepath.Ext(base))
 		outPath = filepath.Join(destDir, name+ext)
 	}
-	return converter.ConvertImage(filePath, outPath, targetFormat, qualityOrSize)
+	return converter.Convert(filePath, outPath, targetFormat, qualityOrSize, resolution)
 }

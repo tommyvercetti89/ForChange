@@ -64,7 +64,11 @@ func Run(initialFiles []string) {
 	var browseDestBtn *walk.PushButton
 
 	model := &ImageModel{items: make([]*ImageFile, 0)}
-	formats := []string{"PNG", "JPEG", "GIF", "BMP", "TIFF", "ICO"}
+	formats := []string{
+		"PNG", "JPEG", "GIF", "BMP", "TIFF", "ICO",
+		"MP4", "MKV", "AVI", "MOV", "WEBM", "GIF (Video)",
+		"MP3", "WAV", "AAC", "FLAC", "OGG", "M4A",
+	}
 
 	err := MainWindow{
 		AssignTo: &mainWindow,
@@ -155,6 +159,14 @@ func Run(initialFiles []string) {
 										qualityLabel.SetText("Size (px):")
 										qualityEdit.SetRange(16.0, 256.0)
 										qualityEdit.SetValue(256.0)
+									} else if fmtStr == "MP4" || fmtStr == "MKV" || fmtStr == "AVI" || fmtStr == "MOV" || fmtStr == "WEBM" || fmtStr == "GIF (Video)" {
+										qualityLabel.SetText("Quality (CRF):")
+										qualityEdit.SetRange(1.0, 100.0)
+										qualityEdit.SetValue(80.0)
+									} else if fmtStr == "MP3" || fmtStr == "WAV" || fmtStr == "AAC" || fmtStr == "FLAC" || fmtStr == "OGG" || fmtStr == "M4A" {
+										qualityLabel.SetText("Quality (Bitrate):")
+										qualityEdit.SetRange(1.0, 100.0)
+										qualityEdit.SetValue(80.0)
 									} else {
 										qualityLabel.SetText("Quality:")
 										qualityEdit.SetRange(1.0, 100.0)
@@ -171,7 +183,7 @@ func Run(initialFiles []string) {
 								Value:    80.0,
 								Decimals: 0,
 								MinValue: 1.0,
-								MaxValue: 100.0,
+								MaxValue: 256.0,
 							},
 						},
 					},
@@ -271,11 +283,11 @@ func Run(initialFiles []string) {
 	mainWindow.Run()
 }
 
-// addFiles shows multiple file picker to select input images
+// addFiles shows multiple file picker to select input files
 func addFiles(parent *walk.MainWindow, model *ImageModel, statusLabel *walk.StatusBarItem) {
 	dlg := walk.FileDialog{
-		Title:  "Select Images to Convert",
-		Filter: "Image Files (*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.tiff;*.webp;*.ico)|*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.tiff;*.webp;*.ico|All Files (*.*)|*.*",
+		Title:  "Select Media Files to Convert",
+		Filter: "All Supported Media Files (*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.tiff;*.webp;*.ico;*.mp4;*.mkv;*.avi;*.mov;*.webm;*.mp3;*.wav;*.aac;*.flac;*.ogg;*.m4a)|*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.tiff;*.webp;*.ico;*.mp4;*.mkv;*.avi;*.mov;*.webm;*.mp3;*.wav;*.aac;*.flac;*.ogg;*.m4a|Image Files (*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.tiff;*.webp;*.ico)|*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.tiff;*.webp;*.ico|Video Files (*.mp4;*.mkv;*.avi;*.mov;*.webm)|*.mp4;*.mkv;*.avi;*.mov;*.webm|Audio Files (*.mp3;*.wav;*.aac;*.flac;*.ogg;*.m4a)|*.mp3;*.wav;*.aac;*.flac;*.ogg;*.m4a|All Files (*.*)|*.*",
 	}
 
 	ok, err := dlg.ShowOpenMultiple(parent)
@@ -344,7 +356,7 @@ func convertAll(parent *walk.MainWindow, model *ImageModel, targetFormat string,
 			outPath = filepath.Join(destDir, name+ext)
 		}
 
-		err := converter.ConvertImage(item.Path, outPath, targetFormat, quality)
+		err := converter.Convert(item.Path, outPath, targetFormat, quality, "")
 
 		// Update final conversion status on the GUI thread
 		parent.Synchronize(func() {
