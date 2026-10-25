@@ -44,13 +44,15 @@ jobs:
 
       - name: Build Classic Edition
         run: |
-          go build -o ForChange.exe
+          go build -ldflags="-s -w -H windowsgui" -o ForChange_Classic.exe .
+          Copy-Item -Path "ForChange_Classic.exe" -Destination "ForChange.exe" -Force
 
       - name: Build Modern Edition
         run: |
           cd modern
           wails build
           cd ..
+          Copy-Item -Path "modern\build\bin\ForChangeModern.exe" -Destination ".\ForChange_Modern.exe" -Force
           Copy-Item -Path "modern\build\bin\ForChangeModern.exe" -Destination ".\ForChangeModern.exe" -Force
 
       - name: Build Inno Setup Installers
