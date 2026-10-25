@@ -222,23 +222,38 @@ browseFolderBtn.addEventListener('click', async () => {
 });
 
 // 4. File Management (Add, Remove, Clear)
-addFilesBtn.addEventListener('click', addFilesHandler);
-addMoreBtn.addEventListener('click', addFilesHandler);
+dropZone.addEventListener('click', (e) => {
+    addFilesHandler();
+});
+
+addFilesBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    addFilesHandler();
+});
+
+addMoreBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    addFilesHandler();
+});
 
 async function addFilesHandler() {
     if (isConverting) return;
     try {
+        updateStatus('Opening file dialog...');
         const files = await SelectFiles();
         if (files && files.length > 0) {
             addFilesToList(files);
+        } else {
+            updateStatus('Ready');
         }
     } catch (err) {
-        console.error(err);
-        updateStatus('Failed to select files');
+        console.error('SelectFiles failed:', err);
+        updateStatus(`Failed to select files: ${err?.message || err}`);
     }
 }
 
 function addFilesToList(newFiles) {
+    let addedCount = 0;
     newFiles.forEach(file => {
         // Prevent duplicate paths
         if (!fileList.some(item => item.path === file.path)) {
@@ -249,10 +264,15 @@ function addFilesToList(newFiles) {
                 path: file.path,
                 status: 'Pending'
             });
+            addedCount++;
         }
     });
     renderFileList();
-    updateStatus(`Added ${newFiles.length} file(s). Total: ${fileList.length}`);
+    if (addedCount > 0) {
+        updateStatus(`Added ${addedCount} file(s). Total: ${fileList.length}`);
+    } else {
+        updateStatus(`Selected file(s) already in the list. Total: ${fileList.length}`);
+    }
 }
 
 clearListBtn.addEventListener('click', () => {

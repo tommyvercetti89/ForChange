@@ -46,10 +46,22 @@ type FileInfo struct {
 	Path   string `json:"path"`
 }
 
-// SelectFiles opens a file dialog to choose image files
-func (a *App) SelectFiles() ([]FileInfo, error) {
-	files, err := runtime.OpenMultipleFilesDialog(a.ctx, runtime.OpenDialogOptions{
-		Title: "Select Images to Convert",
+// SelectFiles opens a file dialog to choose media files
+func (a *App) SelectFiles() (infos []FileInfo, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			infos = nil
+			err = nil
+		}
+	}()
+
+	ctx := a.ctx
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
+	files, err := runtime.OpenMultipleFilesDialog(ctx, runtime.OpenDialogOptions{
+		Title: "Select Media Files to Convert",
 		Filters: []runtime.FileFilter{
 			{
 				DisplayName: "All Media Files (*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.tiff;*.webp;*.ico;*.mp4;*.mkv;*.avi;*.mov;*.webm;*.mp3;*.wav;*.aac;*.flac;*.ogg;*.m4a)",
@@ -77,7 +89,6 @@ func (a *App) SelectFiles() ([]FileInfo, error) {
 		return nil, err
 	}
 
-	var infos []FileInfo
 	for _, f := range files {
 		info, err := a.GetFileInfo(f)
 		if err == nil {
@@ -88,11 +99,22 @@ func (a *App) SelectFiles() ([]FileInfo, error) {
 }
 
 // SelectFolder opens a folder dialog to choose destination directory
-func (a *App) SelectFolder() (string, error) {
-	folder, err := runtime.OpenDirectoryDialog(a.ctx, runtime.OpenDialogOptions{
+func (a *App) SelectFolder() (folder string, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			folder = ""
+			err = nil
+		}
+	}()
+
+	ctx := a.ctx
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
+	return runtime.OpenDirectoryDialog(ctx, runtime.OpenDialogOptions{
 		Title: "Select Destination Folder",
 	})
-	return folder, err
 }
 
 // GetFileInfo fetches details of a given file path
