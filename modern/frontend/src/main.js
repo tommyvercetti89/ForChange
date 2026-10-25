@@ -46,6 +46,72 @@ const statusBar = document.getElementById('status-bar');
 const resolutionGroup = document.getElementById('resolution-group');
 const videoResolutionSelect = document.getElementById('video-resolution');
 
+// Progress Bar DOM Elements
+const progressContainer = document.getElementById('progress-container');
+const progressText = document.getElementById('progress-text');
+const progressPercent = document.getElementById('progress-percent');
+const progressBarFill = document.getElementById('progress-bar-fill');
+
+// Custom Modal DOM Elements
+const customModalBackdrop = document.getElementById('custom-modal-backdrop');
+const modalIcon = document.getElementById('modal-icon');
+const modalTitle = document.getElementById('modal-title');
+const modalMessage = document.getElementById('modal-message');
+const modalStats = document.getElementById('modal-stats');
+const modalStatSuccess = document.getElementById('modal-stat-success');
+const modalStatFailed = document.getElementById('modal-stat-failed');
+const modalCloseBtn = document.getElementById('modal-close-btn');
+const modalActionBtn = document.getElementById('modal-action-btn');
+
+function showModal({ title = 'Notice', message = '', type = 'info', stats = null, buttonText = 'Done' }) {
+    if (!customModalBackdrop) return;
+    modalTitle.innerText = title;
+    modalMessage.innerText = message;
+    modalActionBtn.innerText = buttonText;
+
+    if (type === 'success') {
+        modalIcon.className = 'modal-icon';
+        modalIcon.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+    } else if (type === 'warning') {
+        modalIcon.className = 'modal-icon warning';
+        modalIcon.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
+    } else {
+        modalIcon.className = 'modal-icon error';
+        modalIcon.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
+    }
+
+    if (stats) {
+        modalStats.style.display = 'grid';
+        modalStatSuccess.innerText = stats.successCount;
+        modalStatFailed.innerText = stats.failCount;
+    } else {
+        modalStats.style.display = 'none';
+    }
+
+    customModalBackdrop.style.display = 'flex';
+}
+
+function hideModal() {
+    if (customModalBackdrop) {
+        customModalBackdrop.style.display = 'none';
+    }
+}
+
+if (modalCloseBtn) modalCloseBtn.addEventListener('click', hideModal);
+if (modalActionBtn) modalActionBtn.addEventListener('click', hideModal);
+if (customModalBackdrop) {
+    customModalBackdrop.addEventListener('click', (e) => {
+        if (e.target === customModalBackdrop) {
+            hideModal();
+        }
+    });
+}
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && customModalBackdrop && customModalBackdrop.style.display !== 'none') {
+        hideModal();
+    }
+});
+
 // 1. Theme Management
 function updateThemeIcon(theme) {
     if (themeIcon) {
@@ -432,7 +498,12 @@ convertBtn.addEventListener('click', async () => {
     const resolution = videoResolutionSelect.value;
 
     if (!useSource && !destDir) {
-        alert('Please select a destination folder.');
+        showModal({
+            title: 'Destination Folder Required',
+            message: 'Please choose an output folder or check "Same as source folder" before converting.',
+            type: 'warning',
+            buttonText: 'OK'
+        });
         return;
     }
 
@@ -453,26 +524,57 @@ convertBtn.addEventListener('click', async () => {
     addMoreBtn.disabled = true;
     videoResolutionSelect.disabled = true;
 
+    // Show Progress Bar
+    if (progressContainer) {
+        progressContainer.style.display = 'flex';
+        progressBarFill.style.width = '0%';
+        progressPercent.innerText = '0%';
+        progressText.innerText = `Preparing conversion...`;
+    }
+
     renderFileList();
     updateStatus('Conversion started...');
 
     let successCount = 0;
     let failCount = 0;
+    const totalFiles = fileList.length;
 
-    for (let i = 0; i < fileList.length; i++) {
-        fileList[i].status = 'Converting';
+    for (let i = 0; i < totalFiles; i++) {
+        const file = fileList[i];
+        file.status = 'Converting';
         renderFileList();
 
+        const currentPct = Math.round((i / totalFiles) * 100);
+        if (progressBarFill) {
+            progressBarFill.style.width = `${currentPct}%`;
+            progressPercent.innerText = `${currentPct}%`;
+            progressText.innerText = `Converting (${i + 1}/${totalFiles}): ${file.name}`;
+        }
+        updateStatus(`Converting [${i + 1}/${totalFiles}]: ${file.name}`);
+
         try {
-            await ConvertFile(fileList[i].path, format, qualityOrSize, useSource, destDir, resolution);
-            fileList[i].status = 'Success';
+            await ConvertFile(file.path, format, qualityOrSize, useSource, destDir, resolution);
+            file.status = 'Success';
             successCount++;
         } catch (err) {
-            console.error(`Failed to convert ${fileList[i].path}:`, err);
-            fileList[i].status = 'Error';
+            console.error(`Failed to convert ${file.path}:`, err);
+            file.status = 'Error';
             failCount++;
         }
         renderFileList();
+
+        const completedPct = Math.round(((i + 1) / totalFiles) * 100);
+        if (progressBarFill) {
+            progressBarFill.style.width = `${completedPct}%`;
+            progressPercent.innerText = `${completedPct}%`;
+        }
+    }
+
+    // Completion state
+    if (progressBarFill) {
+        progressBarFill.style.width = '100%';
+        progressPercent.innerText = '100%';
+        progressText.innerText = 'Conversion finished!';
     }
 
     isConverting = false;
@@ -495,7 +597,24 @@ convertBtn.addEventListener('click', async () => {
 
     renderFileList();
     updateStatus(`Conversion finished. Success: ${successCount}, Failed: ${failCount}`);
-    alert(`Conversion completed!\nSuccess: ${successCount}\nFailed: ${failCount}`);
+
+    // Auto-hide progress bar after brief delay
+    setTimeout(() => {
+        if (progressContainer && !isConverting) {
+            progressContainer.style.display = 'none';
+        }
+    }, 2500);
+
+    // Show custom modal alert
+    showModal({
+        title: failCount === 0 ? 'Conversion Complete' : 'Conversion Finished with Errors',
+        message: failCount === 0 
+            ? 'All files have been successfully converted.'
+            : `Completed with ${successCount} successful and ${failCount} failed item(s).`,
+        type: failCount === 0 ? 'success' : 'warning',
+        stats: { successCount, failCount },
+        buttonText: 'Done'
+    });
 });
 
 function updateStatus(message) {
