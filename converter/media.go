@@ -65,6 +65,9 @@ func ConvertMedia(inputPath, outputPath, targetFormat string, quality int, resol
 	}
 
 	if isAudioTarget {
+		// Strip video stream when targeting audio format (e.g. video to audio conversion)
+		args = append(args, "-vn")
+
 		// Map quality (1-100) to audio bitrate
 		bitrate := "192k"
 		if quality >= 90 {
@@ -93,12 +96,12 @@ func ConvertMedia(inputPath, outputPath, targetFormat string, quality int, resol
 		}
 	} else {
 		// Video targets (mp4, mkv, avi, mov, webm, gif_video)
-		// Map quality (1-100) to CRF (51 - 0)
-		crf := 51 - (quality * 51 / 100)
-		if crf < 0 {
-			crf = 0
-		} else if crf > 51 {
-			crf = 51
+		// Map quality (1-100) to CRF (36 - 18) for x264. Default quality (80) produces CRF 21-22.
+		crf := 36 - (quality * (36 - 18) / 100)
+		if crf < 18 {
+			crf = 18
+		} else if crf > 36 {
+			crf = 36
 		}
 
 		// Add resolution scaling if requested
@@ -126,35 +129,36 @@ func ConvertMedia(inputPath, outputPath, targetFormat string, quality int, resol
 				width = 320
 				fps = 10
 			}
-			filter := fmt.Sprintf("fps=%d,scale=%d:-1:flags=lanczos", fps, width)
+			filter := fmt.Sprintf("fps=%d,scale=%d:-2:flags=lanczos", fps, width)
 			if scaleFilter != "" {
 				filter = fmt.Sprintf("fps=%d,%s:flags=lanczos", fps, scaleFilter)
 			}
 			// Single-pass high quality palette generation filter graph
-			filterGraph := fmt.Sprintf("%s,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse", filter)
+			filterGraph := fmt.Sprintf("%s,split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse", filter)
 			args = append(args, "-vf", filterGraph)
 		case "mp4":
-			args = append(args, "-c:v", "libx264", "-crf", fmt.Sprintf("%d", crf), "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "128k")
+			args = append(args, "-c:v", "libx264", "-crf", fmt.Sprintf("%d", crf), "-preset", "medium", "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-c:a", "aac", "-b:a", "128k")
 			if scaleFilter != "" {
 				args = append(args, "-vf", scaleFilter)
 			}
 		case "webm":
-			args = append(args, "-c:v", "libvpx-vp9", "-crf", fmt.Sprintf("%d", crf), "-b:v", "0", "-c:a", "libopus")
+			vp9Crf := 42 - (quality * (42 - 20) / 100)
+			args = append(args, "-c:v", "libvpx-vp9", "-crf", fmt.Sprintf("%d", vp9Crf), "-b:v", "0", "-row-mt", "1", "-pix_fmt", "yuv420p", "-c:a", "libopus")
 			if scaleFilter != "" {
 				args = append(args, "-vf", scaleFilter)
 			}
 		case "mkv":
-			args = append(args, "-c:v", "libx264", "-crf", fmt.Sprintf("%d", crf), "-c:a", "aac", "-b:a", "128k")
+			args = append(args, "-c:v", "libx264", "-crf", fmt.Sprintf("%d", crf), "-preset", "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "128k")
 			if scaleFilter != "" {
 				args = append(args, "-vf", scaleFilter)
 			}
 		case "mov":
-			args = append(args, "-c:v", "libx264", "-crf", fmt.Sprintf("%d", crf), "-c:a", "aac", "-b:a", "128k")
+			args = append(args, "-c:v", "libx264", "-crf", fmt.Sprintf("%d", crf), "-preset", "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "128k")
 			if scaleFilter != "" {
 				args = append(args, "-vf", scaleFilter)
 			}
 		case "avi":
-			args = append(args, "-c:v", "mpeg4", "-q:v", fmt.Sprintf("%d", (crf/2)+1), "-c:a", "libmp3lame", "-b:a", "128k")
+			args = append(args, "-c:v", "mpeg4", "-q:v", fmt.Sprintf("%d", (crf/6)+2), "-c:a", "libmp3lame", "-b:a", "128k")
 			if scaleFilter != "" {
 				args = append(args, "-vf", scaleFilter)
 			}

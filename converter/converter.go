@@ -3,6 +3,7 @@ package converter
 import (
 	"fmt"
 	"image"
+	"image/color"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
@@ -65,7 +66,8 @@ func ConvertImage(inputPath, outputPath, targetFormat string, qualityOrSize int)
 	// Encode to the desired target format
 	switch targetFormat {
 	case "png":
-		err = png.Encode(outFile, img)
+		enc := png.Encoder{CompressionLevel: png.BestCompression}
+		err = enc.Encode(outFile, img)
 	case "jpeg", "jpg":
 		q := qualityOrSize
 		if q < 1 {
@@ -73,7 +75,12 @@ func ConvertImage(inputPath, outputPath, targetFormat string, qualityOrSize int)
 		} else if q > 100 {
 			q = 100
 		}
-		err = jpeg.Encode(outFile, img, &jpeg.Options{Quality: q})
+		// Composite over a clean white background if the image has transparent areas to prevent ugly black backgrounds
+		bounds := img.Bounds()
+		opaqueImg := image.NewRGBA(bounds)
+		draw.Draw(opaqueImg, bounds, &image.Uniform{C: color.White}, image.Point{}, draw.Src)
+		draw.Draw(opaqueImg, bounds, img, bounds.Min, draw.Over)
+		err = jpeg.Encode(outFile, opaqueImg, &jpeg.Options{Quality: q})
 	case "gif":
 		err = gif.Encode(outFile, img, &gif.Options{NumColors: 256})
 	case "bmp":
@@ -89,27 +96,32 @@ func ConvertImage(inputPath, outputPath, targetFormat string, qualityOrSize int)
 		bounds := img.Bounds()
 		width := bounds.Dx()
 		height := bounds.Dy()
-		if width != sz || height != sz {
-			var newW, newH int
-			if width > height {
-				newW = sz
-				newH = (height * sz) / width
-			} else {
-				newH = sz
-				newW = (width * sz) / height
-			}
-			if newW < 1 {
-				newW = 1
-			}
-			if newH < 1 {
-				newH = 1
-			}
 
-			scaledImg := image.NewRGBA(image.Rect(0, 0, newW, newH))
-			draw.BiLinear.Scale(scaledImg, scaledImg.Bounds(), img, bounds, draw.Over, nil)
-			img = scaledImg
+		// Calculate scaled dimensions preserving aspect ratio
+		var newW, newH int
+		if width > height {
+			newW = sz
+			newH = (height * sz) / width
+		} else {
+			newH = sz
+			newW = (width * sz) / height
 		}
-		err = ico.Encode(outFile, img)
+		if newW < 1 {
+			newW = 1
+		}
+		if newH < 1 {
+			newH = 1
+		}
+
+		// Windows icons should be placed on a square canvas (sz x sz) with transparent padding
+		canvas := image.NewRGBA(image.Rect(0, 0, sz, sz))
+		offsetX := (sz - newW) / 2
+		offsetY := (sz - newH) / 2
+		targetRect := image.Rect(offsetX, offsetY, offsetX+newW, offsetY+newH)
+
+		// High-fidelity Catmull-Rom resampling for crisp icon downscaling
+		draw.CatmullRom.Scale(canvas, targetRect, img, bounds, draw.Over, nil)
+		err = ico.Encode(outFile, canvas)
 	default:
 		return fmt.Errorf("unsupported output format: %s", targetFormat)
 	}
