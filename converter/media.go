@@ -45,6 +45,15 @@ func ConvertMedia(inputPath, outputPath, targetFormat string, quality int, resol
 		outputPath = filepath.Join(dir, name+ext)
 	}
 
+	// Prevent overwriting the original file directly
+	if filepath.Clean(outputPath) == filepath.Clean(inputPath) {
+		dir := filepath.Dir(inputPath)
+		base := filepath.Base(inputPath)
+		ext := filepath.Ext(inputPath)
+		name := strings.TrimSuffix(base, ext)
+		outputPath = filepath.Join(dir, name+"_converted"+ext)
+	}
+
 	// Prepare ffmpeg arguments
 	args := []string{"-y", "-i", inputPath}
 

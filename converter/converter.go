@@ -46,6 +46,15 @@ func ConvertImage(inputPath, outputPath, targetFormat string, qualityOrSize int)
 		outputPath = filepath.Join(dir, name+ext)
 	}
 
+	// Prevent overwriting the original file directly
+	if filepath.Clean(outputPath) == filepath.Clean(inputPath) {
+		dir := filepath.Dir(inputPath)
+		base := filepath.Base(inputPath)
+		ext := filepath.Ext(inputPath)
+		name := strings.TrimSuffix(base, ext)
+		outputPath = filepath.Join(dir, name+"_converted"+ext)
+	}
+
 	// Create output file
 	outFile, err := os.Create(outputPath)
 	if err != nil {
@@ -58,7 +67,13 @@ func ConvertImage(inputPath, outputPath, targetFormat string, qualityOrSize int)
 	case "png":
 		err = png.Encode(outFile, img)
 	case "jpeg", "jpg":
-		err = jpeg.Encode(outFile, img, &jpeg.Options{Quality: qualityOrSize})
+		q := qualityOrSize
+		if q < 1 {
+			q = 80
+		} else if q > 100 {
+			q = 100
+		}
+		err = jpeg.Encode(outFile, img, &jpeg.Options{Quality: q})
 	case "gif":
 		err = gif.Encode(outFile, img, &gif.Options{NumColors: 256})
 	case "bmp":
@@ -125,14 +140,21 @@ func Convert(inputPath, outputPath, targetFormat string, qualityOrSize int, reso
 
 	// Determine if target format is a media (video/audio) format
 	isMediaTarget := false
+	isVideoTarget := false
 	switch targetFormatClean {
-	case "mp4", "mkv", "avi", "mov", "webm", "gif_video", "mp3", "wav", "aac", "flac", "ogg", "m4a":
+	case "mp4", "mkv", "avi", "mov", "webm", "gif_video":
+		isMediaTarget = true
+		isVideoTarget = true
+	case "mp3", "wav", "aac", "flac", "ogg", "m4a":
 		isMediaTarget = true
 	}
 
 	// Validate media/image compatibility
 	if inputPathType == "audio" && !isMediaTarget {
 		return fmt.Errorf("cannot convert audio to an image format (%s)", targetFormatClean)
+	}
+	if inputPathType == "audio" && isVideoTarget {
+		return fmt.Errorf("cannot convert audio to a video format (%s)", targetFormatClean)
 	}
 	if inputPathType == "image" && isMediaTarget && targetFormatClean != "gif_video" {
 		return fmt.Errorf("cannot convert image to a video/audio format (%s)", targetFormatClean)

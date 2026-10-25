@@ -347,9 +347,13 @@ func convertAll(parent *walk.MainWindow, model *ImageModel, targetFormat string,
 
 		var outPath string
 		if !useSource {
-			ext := "." + strings.ToLower(targetFormat)
-			if strings.ToLower(targetFormat) == "jpeg" {
+			targetClean := strings.ToLower(strings.TrimSpace(targetFormat))
+			ext := "." + targetClean
+			if targetClean == "jpeg" {
 				ext = ".jpg"
+			}
+			if targetClean == "gif (video)" || targetClean == "gif_video" || targetClean == "gif" {
+				ext = ".gif"
 			}
 			base := filepath.Base(item.Path)
 			name := strings.TrimSuffix(base, filepath.Ext(base))
