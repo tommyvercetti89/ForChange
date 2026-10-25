@@ -77,22 +77,32 @@ func Run(initialFiles []string) {
 	var destFolderEdit *walk.LineEdit
 	var browseDestBtn *walk.PushButton
 
+	var isConverting bool
+	var addBtn *walk.PushButton
+	var removeBtn *walk.PushButton
+	var clearBtn *walk.PushButton
+	var convertBtn *walk.PushButton
+
 	model := &ImageModel{items: make([]*ImageFile, 0)}
 	currentFormats := allFormats
 
 	err := MainWindow{
 		AssignTo: &mainWindow,
 		Title:    "ForChange",
-		MinSize:  Size{Width: 580, Height: 480},
-		Size:     Size{Width: 580, Height: 480},
+		MinSize:  Size{Width: 580, Height: 450},
+		Size:     Size{Width: 620, Height: 480},
 		Layout:   VBox{MarginsZero: true, Spacing: 0},
 		MenuItems: []MenuItem{
 			Menu{
 				Text: "&File",
 				Items: []MenuItem{
 					Action{
-						Text:        "&Add Files...",
-						OnTriggered: func() { addFiles(mainWindow, model, statusLabel, formatComboBox, &currentFormats) },
+						Text: "&Add Files...",
+						OnTriggered: func() {
+							if !isConverting {
+								addFiles(mainWindow, model, statusLabel, formatComboBox, &currentFormats)
+							}
+						},
 					},
 					Separator{},
 					Action{
@@ -108,7 +118,7 @@ func Run(initialFiles []string) {
 						Text: "&About ForChange",
 						OnTriggered: func() {
 							walk.MsgBox(mainWindow, "About ForChange",
-								"ForChange Image Converter v1.0\nDeveloped by tommyvercetti89 with the help of Antigravity AI (Google DeepMind).",
+								"ForChange Media Converter v1.0\nDeveloped by tommyvercetti89 with the help of Antigravity AI (Google DeepMind).",
 								walk.MsgBoxIconInformation)
 						},
 					},
@@ -125,14 +135,22 @@ func Run(initialFiles []string) {
 						Layout: HBox{Margins: Margins{Left: 6, Top: 6, Right: 6, Bottom: 6}, Spacing: 4},
 						Children: []Widget{
 							PushButton{
-								Text: "&Add...",
+								AssignTo: &addBtn,
+								Text:     "&Add...",
 								OnClicked: func() {
+									if isConverting {
+										return
+									}
 									addFiles(mainWindow, model, statusLabel, formatComboBox, &currentFormats)
 								},
 							},
 							PushButton{
-								Text: "&Remove",
+								AssignTo: &removeBtn,
+								Text:     "&Remove",
 								OnClicked: func() {
+									if isConverting {
+										return
+									}
 									idx := tableView.CurrentIndex()
 									if idx >= 0 && idx < len(model.items) {
 										model.items = append(model.items[:idx], model.items[idx+1:]...)
@@ -143,8 +161,12 @@ func Run(initialFiles []string) {
 								},
 							},
 							PushButton{
-								Text: "&Clear",
+								AssignTo: &clearBtn,
+								Text:     "&Clear",
 								OnClicked: func() {
+									if isConverting {
+										return
+									}
 									model.items = nil
 									model.PublishRowsReset()
 									updateStatus(model, statusLabel)
@@ -201,8 +223,16 @@ func Run(initialFiles []string) {
 						},
 					},
 					PushButton{
-						Text: "Convert All",
+						AssignTo: &convertBtn,
+						Text:     "Convert All",
 						OnClicked: func() {
+							if isConverting {
+								return
+							}
+							if len(model.items) == 0 {
+								walk.MsgBox(mainWindow, "ForChange", "Please add files to convert first.", walk.MsgBoxIconInformation)
+								return
+							}
 							idx := formatComboBox.CurrentIndex()
 							if idx < 0 || idx >= len(currentFormats) {
 								walk.MsgBox(mainWindow, "ForChange", "Please select a target format.", walk.MsgBoxIconWarning)
@@ -219,7 +249,13 @@ func Run(initialFiles []string) {
 									return
 								}
 							}
-							go convertAll(mainWindow, model, target, quality, useSource, destDir)
+							isConverting = true
+							if addBtn != nil { addBtn.SetEnabled(false) }
+							if removeBtn != nil { removeBtn.SetEnabled(false) }
+							if clearBtn != nil { clearBtn.SetEnabled(false) }
+							if convertBtn != nil { convertBtn.SetEnabled(false) }
+							if formatComboBox != nil { formatComboBox.SetEnabled(false) }
+							go convertAll(mainWindow, model, target, quality, useSource, destDir, &isConverting, addBtn, removeBtn, clearBtn, convertBtn, formatComboBox)
 						},
 					},
 				},
@@ -355,7 +391,7 @@ func updateStatus(model *ImageModel, statusLabel *walk.StatusBarItem) {
 }
 
 // convertAll runs the background conversion threads for all files
-func convertAll(parent *walk.MainWindow, model *ImageModel, targetFormat string, quality int, useSource bool, destDir string) {
+func convertAll(parent *walk.MainWindow, model *ImageModel, targetFormat string, quality int, useSource bool, destDir string, isConverting *bool, addBtn, removeBtn, clearBtn, convertBtn *walk.PushButton, formatComboBox *walk.ComboBox) {
 	var successCount, failCount int
 
 	for i, item := range model.items {
@@ -396,6 +432,12 @@ func convertAll(parent *walk.MainWindow, model *ImageModel, targetFormat string,
 	}
 
 	parent.Synchronize(func() {
+		*isConverting = false
+		if addBtn != nil { addBtn.SetEnabled(true) }
+		if removeBtn != nil { removeBtn.SetEnabled(true) }
+		if clearBtn != nil { clearBtn.SetEnabled(true) }
+		if convertBtn != nil { convertBtn.SetEnabled(true) }
+		if formatComboBox != nil { formatComboBox.SetEnabled(true) }
 		walk.MsgBox(parent, "ForChange",
 			fmt.Sprintf("Conversion finished!\nSuccess: %d\nFailed: %d", successCount, failCount),
 			walk.MsgBoxIconInformation)

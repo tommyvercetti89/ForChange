@@ -5,117 +5,153 @@
 <h1 align="center">ForChange</h1>
 
 <p align="center">
-  <strong>A premium, dual-edition media converter for Windows — images, video & audio — with shell context-menu integration.</strong>
+  <strong>High-performance, multi-edition media converter for Windows — images, video, and audio — with native Windows Explorer context menu integration.</strong>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Platform-Windows-0078d7?style=for-the-badge&logo=windows" alt="Platform">
-  <img src="https://img.shields.io/badge/Language-Go-00add8?style=for-the-badge&logo=go" alt="Language">
+  <img src="https://img.shields.io/badge/Language-Go_1.26-00add8?style=for-the-badge&logo=go" alt="Language">
   <img src="https://img.shields.io/badge/GUI-Wails_v2-00f0ff?style=for-the-badge&logo=wails" alt="Wails">
   <img src="https://img.shields.io/badge/UI-Win32_Walk-7000ff?style=for-the-badge" alt="Walk">
+  <img src="https://img.shields.io/badge/Compression-UPX_LZMA-orange?style=for-the-badge" alt="Compression">
   <img src="https://img.shields.io/badge/License-MIT-emerald?style=for-the-badge" alt="License">
 </p>
 
 <p align="center">
-  <a href="README.md">🇬🇧 English</a> &nbsp;|&nbsp; <a href="README.tr.md">🇹🇷 Türkçe</a>
+  <a href="README.md">English</a> &nbsp;|&nbsp; <a href="README.tr.md">Türkçe</a>
 </p>
 
 ---
 
-**ForChange** is a highly modular, fast, and lightweight **image, video & audio converter** for Windows. It offers the best of both worlds: a **Classic Win32 Edition** styled after native Windows applications (7-Zip aesthetic), and a **Modern Edition** built with Wails featuring a sleek dark/light UI with smooth animations.
+## Overview
 
-Both editions register **cascading right-click context menus** directly into Windows Explorer for instant, single-click conversions — for image, video, and audio files alike.
+**ForChange** is a fast, modular media conversion suite engineered for Windows. It provides comprehensive media processing capabilities across images, video containers, and audio tracks, featuring both headless CLI execution and two distinct graphical interfaces:
 
----
+1. **Classic Win32 Edition** — Native Windows interface with classic utility aesthetics (Walk Win32 library), designed for speed and minimal system overhead.
+2. **Modern Edition** — Web-based desktop interface (Wails v2 + Vite) featuring an obsidian dark mode, smooth transitions, and real-time conversion telemetry.
 
-## 🌟 Editions & Key Features
-
-### 🏛️ Classic Win32 Edition (`ForChange.exe`)
-- **7-Zip Style Native UI** — Ultra-lightweight Win32 interface using `github.com/lxn/walk`
-- **Minimalist & Fast** — Instant startup with negligible RAM usage
-- **Full Media Support** — Convert images, video files, and audio files from a single interface
-- **Integrated Context Menu** — Cascading shell menu auto-registered for images, video, and audio on installation
-
-### 🌌 Modern Wails Edition (`ForChangeModern.exe`)
-- **Premium Web GUI** — Sleek modern layout with custom glassmorphism components
-- **Pitch-Black Dark Mode** — `#000000` background with glowing indigo/cyan borders and smooth theme transitions
-- **Light Theme** — Soft, high-contrast white and slate color scheme
-- **Drag-and-Drop** — Drop media files directly from Explorer into the app
-- **Real-time Batch Badges** — Live conversion progress with success, pending, and error badges
-- **Full CLI Support** — Also supports silent context-menu conversions headlessly
+Both editions are available in **Lightweight** (external FFmpeg) and **Standalone** (embedded FFmpeg with zero external dependencies) binaries, compressed with UPX LZMA for minimal distribution size.
 
 ---
 
-## 📊 Supported Formats
+## Editions and Distributions
 
-### 🖼️ Image Formats
+| Binary Name | GUI Engine | FFmpeg Dependency | UPX Size | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **ForChange_Classic.exe** | Walk (Win32) | External / System PATH | **~2.0 MB** | Lightweight native utility with near-zero memory footprint. |
+| **ForChange_Modern.exe** | Wails v2 (WebView2) | External / System PATH | **~3.5 MB** | Modern interface with dark/light themes and drag-and-drop. |
+| **ForChange_Classic_Standalone.exe** | Walk (Win32) | **Embedded (Self-contained)** | **~27.3 MB** | 100% portable single-file binary; runs on any Windows PC. |
+| **ForChange_Modern_Standalone.exe** | Wails v2 (WebView2) | **Embedded (Self-contained)** | **~28.6 MB** | Modern glassmorphism UI with fully integrated media engine. |
 
-| Format | Read | Write | Notes |
-| :--- | :---: | :---: | :--- |
-| **PNG** | ✅ | ✅ | Standard lossless encoding |
-| **JPEG / JPG** | ✅ | ✅ | Quality slider (1–100) |
-| **GIF** | ✅ | ✅ | 256-color palette encoding |
-| **BMP** | ✅ | ✅ | Uncompressed bitmap |
-| **TIFF / TIF** | ✅ | ✅ | Deflate compression |
-| **WEBP** | ✅ | ❌ | Decode only (pure Go) |
-| **ICO** | ✅ | ✅ | Auto-resized, max 256×256 px |
-
-### 🎬 Video Formats
-
-| Format | Read | Write | Notes |
-| :--- | :---: | :---: | :--- |
-| **MP4** | ✅ | ✅ | H.264, widely compatible |
-| **MKV** | ✅ | ✅ | Matroska container |
-| **AVI** | ✅ | ✅ | Legacy format support |
-| **MOV** | ✅ | ✅ | Apple QuickTime |
-| **WEBM** | ✅ | ✅ | VP8/VP9, web-optimized |
-| **GIF** (from video) | ✅ | ✅ | Animated GIF extraction |
-| **MP3** (from video) | ✅ | ✅ | Extract audio from video |
-
-### 🔊 Audio Formats
-
-| Format | Read | Write | Notes |
-| :--- | :---: | :---: | :--- |
-| **MP3** | ✅ | ✅ | Lossy, universal playback |
-| **WAV** | ✅ | ✅ | Uncompressed PCM |
-| **M4A** | ✅ | ✅ | AAC in MPEG-4 container |
-| **FLAC** | ✅ | ✅ | Lossless audio |
-| **AAC** | ✅ | ✅ | Advanced Audio Coding |
-| **OGG** | ✅ | ✅ | Vorbis codec |
+> **Standalone Architecture Note:** The standalone variants embed a complete FFmpeg toolset directly into the executable using Go build tags (`embed_ffmpeg`). On initial execution, the binary validates and extracts the engine to `%LOCALAPPDATA%\ForChange` with atomic byte-level integrity verification.
 
 ---
 
-## 🖱️ Right-Click Context Menu Integration
+## Supported Formats
 
-One of ForChange's standout features is its deep Windows Explorer integration. After installation, **right-clicking any supported file** shows a **"ForChange Converter"** submenu with one-click conversion options — no need to open the app manually.
+### Image Formats
 
-### How it works
+| Format | Decode | Encode | Notes |
+| :--- | :---: | :---: | :--- |
+| **PNG** | Yes | Yes | High-compression lossless encoding |
+| **JPEG / JPG** | Yes | Yes | Adjustable quality factor (1–100) with transparency composite |
+| **GIF** | Yes | Yes | Standard 256-color palette quantization |
+| **BMP** | Yes | Yes | Uncompressed native bitmap |
+| **TIFF / TIF** | Yes | Yes | Deflate compression enabled |
+| **WEBP** | Yes | No | Pure Go decoding pipeline |
+| **ICO** | Yes | Yes | Square canvas padding with Catmull-Rom resampling (16–256 px) |
 
-The installer registers shell entries under `Software\Classes\SystemFileAssociations` in the Windows Registry — the correct, non-destructive approach that **does not interfere with existing file associations** set by other applications (e.g. VLC, Windows Media Player).
+### Video Formats
 
-### Context menu coverage
+| Format | Decode | Encode | Notes |
+| :--- | :---: | :---: | :--- |
+| **MP4** | Yes | Yes | H.264 video, AAC audio, `+faststart` web optimization |
+| **MKV** | Yes | Yes | Matroska container with multi-track support |
+| **WEBM** | Yes | Yes | VP9 video codec, Opus audio codec |
+| **AVI** | Yes | Yes | MPEG-4 video codec, MP3 audio codec |
+| **MOV** | Yes | Yes | Apple QuickTime compatible container |
+| **GIF (from Video)** | Yes | Yes | Two-pass Lanczos palettegen / paletteuse animated GIF |
 
-| File Type | Extensions | Submenu Options |
+### Audio Formats
+
+| Format | Decode | Encode | Notes |
+| :--- | :---: | :---: | :--- |
+| **MP3** | Yes | Yes | High-quality LAME encoder (up to 320 kbps) |
+| **WAV** | Yes | Yes | Uncompressed 16-bit PCM |
+| **FLAC** | Yes | Yes | Lossless audio compression |
+| **AAC** | Yes | Yes | Native AAC encoder |
+| **M4A** | Yes | Yes | AAC inside MPEG-4 audio container |
+| **OGG** | Yes | Yes | Vorbis audio codec |
+
+---
+
+## Windows Explorer Context Menu Integration
+
+ForChange integrates directly into the Windows Explorer cascading right-click context menu, enabling one-click file conversions without opening a window.
+
+### Architecture
+
+Shell verbs are registered in the Windows Registry under `Software\Classes\SystemFileAssociations`. This approach:
+- Preserves default system file handlers (VLC, Media Player, Windows Photo Viewer).
+- Appears reliably across Windows 10 and Windows 11.
+- Features dual-registration for common containers (`SystemFileAssociations\video\shell` and per-extension keys).
+
+### Shell Menu Matrix
+
+| Target Category | Monitored Extensions | Available Submenu Actions |
 | :--- | :--- | :--- |
-| **Image** | All image files | Convert to PNG, JPG, BMP, GIF, ICO, Convert with GUI... |
-| **Video** | `.mp4` `.mkv` `.avi` `.mov` `.webm` | Convert to MP4, WEBM, MKV, MP3 (Audio), GIF, Convert with GUI... |
-| **Audio** | All audio files | Convert to MP3, WAV, M4A, FLAC, Convert with GUI... |
-
-> **Technical note:** Video extensions each receive **two** registry entries for maximum compatibility:
-> - `SystemFileAssociations\video\shell\` — PerceivedType-based, catches all video files generically
-> - `SystemFileAssociations\.mp4\shell\` (per-extension) — direct extension binding, guaranteed to appear regardless of which app owns the `.mp4` association
+| **Images** | `.png`, `.jpg`, `.jpeg`, `.bmp`, `.gif`, `.tiff`, `.ico` | Convert to PNG, JPG, BMP, GIF, ICO, Open in GUI |
+| **Videos** | `.mp4`, `.mkv`, `.avi`, `.mov`, `.webm` | Convert to MP4, WEBM, MKV, MP3 (Audio), GIF, Open in GUI |
+| **Audio** | `.mp3`, `.wav`, `.aac`, `.flac`, `.ogg`, `.m4a` | Convert to MP3, WAV, M4A, FLAC, Open in GUI |
 
 ---
 
-## 🛠️ Installation & Compilation
+## Command-Line Interface (CLI)
 
-### Requirements
-- [Go (Golang)](https://go.dev/) 1.23 or higher
-- [Node.js](https://nodejs.org/) & `npm` *(Modern edition only)*
-- [Wails CLI](https://wails.io/docs/gettingstarted/installation) *(Modern edition only)*
-- [Inno Setup 6](https://jrsoftware.org/isinfo.php) *(for building installers)*
+All binaries support headless command-line execution for batch pipelines and scripting:
 
-### Build Steps
+```bash
+# Convert image to PNG
+ForChange_Classic.exe -i input.jpg -f png
+
+# Convert image to JPEG with custom quality factor
+ForChange_Classic.exe -i photo.png -o output.jpg -f jpg -q 92
+
+# Convert image to 256x256 Windows Icon
+ForChange_Classic.exe -i app_logo.png -o app.ico -f ico -q 256
+
+# Transcode video to MP4 container
+ForChange_Modern.exe -i recording.mkv -f mp4
+
+# Extract audio stream from video file as MP3
+ForChange_Classic.exe -i presentation.mp4 -o presentation.mp3 -f mp3 -q 85
+
+# Convert lossless audio to FLAC
+ForChange_Classic.exe -i track.wav -f flac
+```
+
+### CLI Arguments
+
+| Flag | Parameter | Description | Required | Default |
+| :--- | :--- | :--- | :---: | :--- |
+| `-i` | `<path>` | Path to the source media file | Yes | None |
+| `-o` | `<path>` | Path to the destination file (auto-generated if omitted) | No | Next to source |
+| `-f` | `<format>` | Target format name (png, jpg, mp4, webm, mp3, etc.) | Yes | None |
+| `-q` | `<value>` | Encoding quality factor (1–100) or Icon size (16–256) | No | `80` (or `256` for ICO) |
+
+---
+
+## Build from Source
+
+### Prerequisites
+
+- Go (Golang) 1.23 or higher
+- Node.js 18+ and `npm` *(Modern Edition only)*
+- Wails CLI v2 *(Modern Edition only)*
+- Inno Setup 6 *(Optional, for generating setup installers)*
+- UPX 5.x *(Optional, for executable compression)*
+
+### Compilation Steps
 
 1. **Clone the repository:**
    ```bash
@@ -123,129 +159,85 @@ The installer registers shell entries under `Software\Classes\SystemFileAssociat
    cd ForChange
    ```
 
-2. **Build the Classic Edition:**
+2. **Build Classic Edition (Lightweight):**
    ```bash
-   # Rebuild resources (manifest and icon)
-   rsrc -manifest main.manifest -ico assets/logo.ico -o rsrc.syso
-
-   # Build executable
-   go build -ldflags="-s -w -H windowsgui" -o ForChange.exe .
+   go build -ldflags="-s -w -H windowsgui" -o ForChange_Classic.exe .
    ```
 
-3. **Build the Modern Edition:**
+3. **Build Classic Edition (Standalone with Embedded FFmpeg):**
+   ```bash
+   go build -tags embed_ffmpeg -ldflags="-s -w -H windowsgui" -o ForChange_Classic_Standalone.exe .
+   ```
+
+4. **Build Modern Edition (Lightweight):**
+   ```bash
+   cd modern/frontend && npm install && npm run build && cd ..
+   go build -tags "desktop,production" -ldflags="-w -s -H windowsgui" -o ..\ForChange_Modern.exe .
+   cd ..
+   ```
+
+5. **Build Modern Edition (Standalone with Embedded FFmpeg):**
    ```bash
    cd modern
-   wails build -platform windows/amd64 -o ForChangeModern.exe
+   go build -tags "desktop,production,embed_ffmpeg" -ldflags="-w -s -H windowsgui" -o ..\ForChange_Modern_Standalone.exe .
    cd ..
-
-   # Copy binary to root folder
-   Copy-Item "modern\build\bin\ForChangeModern.exe" -Destination "ForChangeModern.exe" -Force
    ```
 
-4. **Create Installers** *(requires Inno Setup 6)*:
+6. **Compress with UPX (Optional):**
    ```bash
-   # Classic installer
-   & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup.iss
+   upx --best --lzma ForChange_Classic.exe ForChange_Modern.exe ForChange_Classic_Standalone.exe ForChange_Modern_Standalone.exe
+   ```
 
-   # Modern installer
+7. **Compile Installers:**
+   ```bash
+   & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup.iss
    & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup_modern.iss
    ```
 
-   Output installers will be placed in the `dist/` folder:
-   - `dist/QBSoft_ForChange_Setup.exe`
-   - `dist/QBSoft_ForChangeModern_Setup.exe`
-
 ---
 
-## 💻 Usage
-
-### 🎨 Graphical Mode (GUI)
-Run `ForChange.exe` or `ForChangeModern.exe` without any flags to launch the GUI.
-
-- **Add Files** — Drag & drop or use the file picker
-- **Destination** — Save next to source file or choose a custom output directory
-- **ICO Size** — When targeting ICO format, the Quality field switches to a Size selector (16–256 px)
-
-### 💻 Command-Line Mode (CLI)
-Both binaries support headless CLI usage:
-
-```bash
-# Convert image to PNG
-ForChange.exe -i photo.jpg -f png
-
-# Convert image to JPG at 90% quality
-ForChange.exe -i photo.png -o output.jpg -f jpg -q 90
-
-# Convert image to 128px Windows icon
-ForChange.exe -i logo.png -o logo.ico -f ico -q 128
-
-# Convert video to MP4
-ForChange.exe -i video.mkv -f mp4
-
-# Convert video to WEBM
-ForChange.exe -i video.mp4 -f webm
-
-# Extract audio from video as MP3
-ForChange.exe -i video.mp4 -f mp3
-
-# Convert audio to FLAC
-ForChange.exe -i music.mp3 -f flac
-
-# Convert audio to WAV
-ForChange.exe -i podcast.m4a -f wav
-```
-
-#### Available CLI Flags
-
-| Flag | Description | Required |
-| :--- | :--- | :---: |
-| `-i` | Input file path | ✅ |
-| `-o` | Output file path | ❌ |
-| `-f` | Target format (see tables above) | ✅ |
-| `-q` | Quality `1–100` (JPEG) or size `16–256` (ICO) | ❌ |
-
----
-
-## 📁 Project Structure
+## Repository Structure
 
 ```
 ForChange/
-├── main.go                  # Entry point — CLI flag routing & GUI fallback
+├── main.go                          # Root entry point — CLI routing & GUI initialization
+├── main.manifest                    # Windows Common Controls manifest
 ├── cli/
-│   └── cli.go               # Headless conversion logic
+│   └── cli.go                       # Headless CLI execution engine
 ├── converter/
-│   ├── converter.go         # Image conversion engine
-│   ├── media.go             # Video & audio conversion (FFmpeg wrapper)
-│   └── ffmpeg_embed.go      # Embedded FFmpeg binary
+│   ├── converter.go                 # Pure-Go image processing & format router
+│   ├── media.go                     # Video and audio transcoding engine
+│   ├── ffmpeg.go                    # FFmpeg discovery, extraction & integrity validation
+│   ├── ffmpeg_embedded.go           # Embedded FFmpeg binary directive (-tags embed_ffmpeg)
+│   └── ffmpeg_noembed.go            # Stub directive for external FFmpeg builds
 ├── gui/
-│   └── gui.go               # Classic Win32 GUI (Walk)
+│   └── gui.go                       # Native Win32 classic interface (Walk)
 ├── modern/
-│   ├── main.go              # Wails app entry point
-│   ├── app.go               # Go backend bindings
-│   └── frontend/            # Web UI (HTML/CSS/JS)
-├── assets/                  # Icons and images
-├── setup.iss                # Inno Setup script — Classic edition
-├── setup_modern.iss         # Inno Setup script — Modern edition
-└── dist/                    # Generated installers (git-ignored)
+│   ├── main.go                      # Wails v2 desktop entry point
+│   ├── app.go                       # Go-to-JS bridge methods & filesystem dialogs
+│   ├── wails.json                   # Wails project configuration
+│   └── frontend/                    # Web GUI (HTML5, Vanilla CSS, ES modules, Vite)
+├── assets/                          # Application icons and branding assets
+├── setup.iss                        # Inno Setup configuration — Classic Edition
+└── setup_modern.iss                 # Inno Setup configuration — Modern Edition
 ```
 
 ---
 
-## 📋 Changelog
+## Security and Privacy
 
-### Latest Changes
-- **Video context menu fixed** — Right-clicking `.mp4`, `.mkv`, `.avi`, `.mov`, `.webm` files now correctly shows the **ForChange Converter** submenu in Windows Explorer. Previously used `.ext\shell\` registry path which is overridden by other apps; now uses the correct `SystemFileAssociations\.ext\shell\` approach.
-- **Full video format support** — MP4, MKV, AVI, MOV, WEBM conversion added via embedded FFmpeg
-- **Audio extraction from video** — Convert any video file directly to MP3
-- **Animated GIF from video** — Extract and convert video clips to animated GIF
-- **Audio conversion** — MP3 ↔ WAV ↔ M4A ↔ FLAC ↔ AAC ↔ OGG
+- **Zero Telemetry:** ForChange contains no analytics, telemetry, or remote communication code.
+- **Local Execution:** 100% of media decoding, transformation, and encoding occurs locally on your machine.
+- **Non-Destructive Registry:** Context menu integration registers under standard file associations and uninstalls cleanly without leaving orphaned registry artifacts.
 
 ---
 
-## 🤝 Collaboration & Credits
-This project was developed by **tommyvercetti89** in pair-programming collaboration with **Antigravity**, a powerful agentic AI coding assistant designed by the Google DeepMind team.
+## Credits and Collaboration
+
+Developed by **tommyvercetti89** in collaboration with **Antigravity**, an agentic AI coding assistant designed by Google DeepMind.
 
 ---
 
-## ⚖️ License
-Distributed under the MIT License. See `LICENSE` for more details.
+## License
+
+This project is licensed under the terms of the [MIT License](LICENSE).

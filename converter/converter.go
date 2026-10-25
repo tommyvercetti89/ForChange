@@ -61,7 +61,13 @@ func ConvertImage(inputPath, outputPath, targetFormat string, qualityOrSize int)
 	if err != nil {
 		return fmt.Errorf("failed to create output file: %w", err)
 	}
-	defer outFile.Close()
+	success := false
+	defer func() {
+		_ = outFile.Close()
+		if !success {
+			_ = os.Remove(outputPath)
+		}
+	}()
 
 	// Encode to the desired target format
 	switch targetFormat {
@@ -88,14 +94,18 @@ func ConvertImage(inputPath, outputPath, targetFormat string, qualityOrSize int)
 	case "tiff", "tif":
 		err = tiff.Encode(outFile, img, &tiff.Options{Compression: tiff.Deflate})
 	case "ico":
+		bounds := img.Bounds()
+		width := bounds.Dx()
+		height := bounds.Dy()
+		if width <= 0 || height <= 0 {
+			return fmt.Errorf("invalid image dimensions for ICO: %dx%d", width, height)
+		}
+
 		// Ensure icon size is between 16 and 256. Default to 256 if not specified or invalid.
 		sz := qualityOrSize
 		if sz < 16 || sz > 256 {
 			sz = 256
 		}
-		bounds := img.Bounds()
-		width := bounds.Dx()
-		height := bounds.Dy()
 
 		// Calculate scaled dimensions preserving aspect ratio
 		var newW, newH int
@@ -130,6 +140,11 @@ func ConvertImage(inputPath, outputPath, targetFormat string, qualityOrSize int)
 		return fmt.Errorf("failed to encode to %s: %w", targetFormat, err)
 	}
 
+	if err := outFile.Close(); err != nil {
+		return fmt.Errorf("failed to finalize output file: %w", err)
+	}
+
+	success = true
 	return nil
 }
 

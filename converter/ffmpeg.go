@@ -54,21 +54,30 @@ func GetFFmpegPath() (string, error) {
 		targetPath := filepath.Join(targetDir, "ffmpeg_v1.exe")
 
 		if info, err := os.Stat(targetPath); err == nil && !info.IsDir() && info.Size() > 0 {
-			extractedPath = targetPath
-			return
+			// If compiled with embedded binary, make sure file size matches to guard against truncated extractions
+			if len(ffmpegBytes) == 0 || info.Size() == int64(len(ffmpegBytes)) {
+				extractedPath = targetPath
+				return
+			}
 		}
 
-		// 4. If embedded binary is present, extract it to LocalAppData
+		// 4. If embedded binary is present, extract it to LocalAppData atomically
 		if len(ffmpegBytes) > 0 {
 			err := os.MkdirAll(targetDir, 0755)
 			if err != nil {
 				extractErr = fmt.Errorf("failed to create directory for ffmpeg: %w", err)
 				return
 			}
-			err = os.WriteFile(targetPath, ffmpegBytes, 0755)
+			tempPath := filepath.Join(targetDir, "ffmpeg_v1.tmp")
+			err = os.WriteFile(tempPath, ffmpegBytes, 0755)
 			if err != nil {
 				extractErr = fmt.Errorf("failed to extract embedded ffmpeg binary: %w", err)
 				return
+			}
+			err = os.Rename(tempPath, targetPath)
+			if err != nil {
+				_ = os.Remove(targetPath)
+				_ = os.Rename(tempPath, targetPath)
 			}
 			extractedPath = targetPath
 			return

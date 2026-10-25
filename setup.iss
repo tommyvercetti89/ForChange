@@ -2,7 +2,7 @@
 #define MyAppName "ForChange"
 #define MyAppVersion "1.0"
 #define MyAppPublisher "QBSoft"
-#define MyAppExeName "ForChange.exe"
+#define MyAppExeName "ForChange_Classic.exe"
 
 [Setup]
 AppId={{E5C3B61E-786C-4965-9831-29E2C68A5EFE}
@@ -28,7 +28,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "ForChange.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "ForChange_Classic.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

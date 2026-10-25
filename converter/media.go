@@ -2,6 +2,7 @@ package converter
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -55,7 +56,7 @@ func ConvertMedia(inputPath, outputPath, targetFormat string, quality int, resol
 	}
 
 	// Prepare ffmpeg arguments
-	args := []string{"-y", "-i", inputPath}
+	args := []string{"-y", "-hide_banner", "-loglevel", "error", "-i", inputPath}
 
 	// Determine if target is audio
 	isAudioTarget := false
@@ -177,6 +178,7 @@ func ConvertMedia(inputPath, outputPath, targetFormat string, quality int, resol
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
+		_ = os.Remove(outputPath) // Clean up partial/broken output file on failure
 		return fmt.Errorf("FFmpeg error: %v, details: %s", err, string(output))
 	}
 

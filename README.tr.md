@@ -5,247 +5,239 @@
 <h1 align="center">ForChange</h1>
 
 <p align="center">
-  <strong>Windows için premium, çift sürümlü medya dönüştürücü — görüntü, video ve ses — Windows Explorer sağ tık menü entegrasyonuyla.</strong>
+  <strong>Windows için yüksek performanslı, çift sürümlü medya dönüştürücü — görüntü, video ve ses — Windows Explorer sağ tık menü entegrasyonuyla.</strong>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Platform-Windows-0078d7?style=for-the-badge&logo=windows" alt="Platform">
-  <img src="https://img.shields.io/badge/Dil-Go-00add8?style=for-the-badge&logo=go" alt="Dil">
+  <img src="https://img.shields.io/badge/Dil-Go_1.26-00add8?style=for-the-badge&logo=go" alt="Dil">
   <img src="https://img.shields.io/badge/GUI-Wails_v2-00f0ff?style=for-the-badge&logo=wails" alt="Wails">
   <img src="https://img.shields.io/badge/UI-Win32_Walk-7000ff?style=for-the-badge" alt="Walk">
+  <img src="https://img.shields.io/badge/Sıkıştırma-UPX_LZMA-orange?style=for-the-badge" alt="Sıkıştırma">
   <img src="https://img.shields.io/badge/Lisans-MIT-emerald?style=for-the-badge" alt="Lisans">
 </p>
 
 <p align="center">
-  <a href="README.md">🇬🇧 English</a> &nbsp;|&nbsp; <a href="README.tr.md">🇹🇷 Türkçe</a>
+  <a href="README.md">English</a> &nbsp;|&nbsp; <a href="README.tr.md">Türkçe</a>
 </p>
 
 ---
 
-**ForChange**, Windows için son derece modüler, hızlı ve hafif bir **görüntü, video ve ses dönüştürücüdür**. İki farklı sürüm sunar: yerel Windows uygulaması estetiğinde (7-Zip tarzı) **Klasik Win32 Sürümü** ve düzgün animasyonlar ile karanlık/açık tema desteği sunan Wails tabanlı **Modern Sürüm**.
+## Genel Bakış
 
-Her iki sürüm de Windows Explorer'a **basamaklı sağ tık menüleri** kaydederek tek tıkla anında dönüşüm yapmanıza olanak tanır — görüntü, video ve ses dosyaları için.
+**ForChange**, Windows için geliştirilmiş hızlı, modüler ve hafif bir medya dönüştürme paketidir. Görüntüler, video formatları ve ses dosyaları arasında kapsamlı dönüştürme yetenekleri sunar. Hem komut satırı (CLI) üzerinden hem de iki farklı grafik arayüz seçeneğiyle kullanılabilir:
 
----
+1. **Klasik Win32 Sürümü** — Sistem kaynaklarını neredeyse hiç tüketmeyen, 7-Zip tarzı yerel Windows arayüzü (Walk Win32 kütüphanesi).
+2. **Modern Sürüm** — Zifiri karanlık mod, yumuşak geçişler ve gerçek zamanlı işlem göstergeleri sunan web tabanlı modern masaüstü arayüzü (Wails v2 + Vite).
 
-## 🌟 Sürümler & Temel Özellikler
-
-### 🏛️ Klasik Win32 Sürümü (`ForChange.exe`)
-- **7-Zip Tarzı Yerel Arayüz** — `github.com/lxn/walk` kullanarak ultra hafif Win32 arayüzü
-- **Minimalist & Hızlı** — Anında başlatma, ihmal edilebilir RAM kullanımı
-- **Tam Medya Desteği** — Tek arayüzden görüntü, video ve ses dönüştürme
-- **Entegre Sağ Tık Menüsü** — Kurulumda görüntü, video ve ses için otomatik kaydedilen basamaklı shell menüsü
-
-### 🌌 Modern Wails Sürümü (`ForChangeModern.exe`)
-- **Premium Web Arayüzü** — Özel glassmorphism bileşenleriyle şık modern tasarım
-- **Zifiri Karanlık Mod** — Parlayan indigo/cyan kenarlıklar ve yumuşak tema geçişleriyle `#000000` arka plan
-- **Açık Tema** — Yumuşak, yüksek kontrastlı beyaz ve arduvaz renk şeması
-- **Sürükle & Bırak** — Medya dosyalarını doğrudan Explorer'dan uygulamaya sürükleyin
-- **Gerçek Zamanlı Toplu İşlem Göstergeleri** — Başarı, beklemede ve hata göstergeleriyle canlı dönüşüm takibi
-- **Tam CLI Desteği** — Sessiz sağ tık menüsü dönüşümlerini de destekler
+Her iki sürüm de isteğe bağlı olarak **Lightweight** (harici sistem FFmpeg kullanan hafif sürüm) ve **Standalone** (FFmpeg tamamen içine gömülü, sıfır harici bağımlılık) olarak derlenebilir ve UPX LZMA algoritmasıyla minimum dosya boyutuna sıkıştırılmıştır.
 
 ---
 
-## 📊 Desteklenen Formatlar
+## Sürümler ve Dağıtımlar
 
-### 🖼️ Görüntü Formatları
+| Dosya Adı | Grafik Motoru | FFmpeg Bağımlılığı | UPX Boyutu | Açıklama |
+| :--- | :--- | :--- | :--- | :--- |
+| **ForChange_Classic.exe** | Walk (Win32) | Harici / Sistem PATH | **~2.0 MB** | Minimum bellek tüketimli yerel Windows aracı. |
+| **ForChange_Modern.exe** | Wails v2 (WebView2) | Harici / Sistem PATH | **~3.5 MB** | Karanlık/açık tema ve sürükle-bırak destekli modern arayüz. |
+| **ForChange_Classic_Standalone.exe** | Walk (Win32) | **Gömülü (Bağımsız)** | **~27.3 MB** | Sıfır bağımlılıklı taşınabilir tek dosya; her Windows'ta çalışır. |
+| **ForChange_Modern_Standalone.exe** | Wails v2 (WebView2) | **Gömülü (Bağımsız)** | **~28.6 MB** | Modern cam efektli arayüz ve entegre medya işleme motoru. |
 
-| Format | Oku | Yaz | Notlar |
-| :--- | :---: | :---: | :--- |
-| **PNG** | ✅ | ✅ | Standart kayıpsız kodlama |
-| **JPEG / JPG** | ✅ | ✅ | Kalite kaydırıcısı (1–100) |
-| **GIF** | ✅ | ✅ | 256 renkli palet kodlama |
-| **BMP** | ✅ | ✅ | Sıkıştırılmamış bitmap |
-| **TIFF / TIF** | ✅ | ✅ | Deflate sıkıştırma |
-| **WEBP** | ✅ | ❌ | Yalnızca okuma (pure Go) |
-| **ICO** | ✅ | ✅ | Otomatik boyutlandırma, max 256×256 px |
-
-### 🎬 Video Formatları
-
-| Format | Oku | Yaz | Notlar |
-| :--- | :---: | :---: | :--- |
-| **MP4** | ✅ | ✅ | H.264, geniş uyumluluk |
-| **MKV** | ✅ | ✅ | Matroska container |
-| **AVI** | ✅ | ✅ | Eski format desteği |
-| **MOV** | ✅ | ✅ | Apple QuickTime |
-| **WEBM** | ✅ | ✅ | VP8/VP9, web optimizasyonlu |
-| **GIF** (videodan) | ✅ | ✅ | Animasyonlu GIF çıkarma |
-| **MP3** (videodan) | ✅ | ✅ | Videodan ses çıkarma |
-
-### 🔊 Ses Formatları
-
-| Format | Oku | Yaz | Notlar |
-| :--- | :---: | :---: | :--- |
-| **MP3** | ✅ | ✅ | Kayıplı, evrensel oynatma |
-| **WAV** | ✅ | ✅ | Sıkıştırılmamış PCM |
-| **M4A** | ✅ | ✅ | MPEG-4 içinde AAC |
-| **FLAC** | ✅ | ✅ | Kayıpsız ses |
-| **AAC** | ✅ | ✅ | Gelişmiş Ses Kodlama |
-| **OGG** | ✅ | ✅ | Vorbis codec |
+> **Standalone Mimarisi Notu:** Bağımsız (Standalone) sürümler, Go derleme etiketleri (`embed_ffmpeg`) aracılığıyla tam FFmpeg araç takımını doğrudan çalıştırılabilir dosya içine gömer. İlk çalıştırmada binary bayt düzeyinde doğrulanarak `%LOCALAPPDATA%\ForChange` dizinine atomik olarak güvenle çıkarılır.
 
 ---
 
-## 🖱️ Sağ Tık Menü Entegrasyonu
+## Desteklenen Formatlar
 
-ForChange'in öne çıkan özelliklerinden biri derin Windows Explorer entegrasyonudur. Kurulumun ardından **desteklenen herhangi bir dosyaya sağ tıklandığında** uygulamayı manuel açmadan tek tıkla dönüştürme seçenekleri sunan **"ForChange Converter"** alt menüsü görüntülenir.
+### Görüntü Formatları
 
-### Nasıl Çalışır?
+| Format | Okuma | Yazma | Notlar |
+| :--- | :---: | :---: | :--- |
+| **PNG** | Evet | Evet | Yüksek sıkıştırmalı kayıpsız kodlama |
+| **JPEG / JPG** | Evet | Evet | Saydamlık arka plan birleştirme destekli kalite ayarı (1–100) |
+| **GIF** | Evet | Evet | Standart 256 renkli palet niceleme |
+| **BMP** | Evet | Evet | Sıkıştırılmamış yerel bitmap |
+| **TIFF / TIF** | Evet | Evet | Deflate sıkıştırma devrede |
+| **WEBP** | Evet | Hayır | Saf Go kod çözme motoru |
+| **ICO** | Evet | Evet | Kare tuval ve Catmull-Rom yeniden örnekleme (16–256 px) |
 
-Yükleyici, Windows Registry'de `Software\Classes\SystemFileAssociations` altına shell girdileri kaydeder. Bu yaklaşım, VLC veya Windows Media Player gibi diğer uygulamaların mevcut dosya ilişkilerini **bozmayan** doğru ve güvenli Windows yöntemidir.
+### Video Formatları
+
+| Format | Okuma | Yazma | Notlar |
+| :--- | :---: | :---: | :--- |
+| **MP4** | Evet | Evet | H.264 video, AAC ses, `+faststart` web optimizasyonu |
+| **MKV** | Evet | Evet | Çoklu kanal destekli Matroska kapsayıcısı |
+| **WEBM** | Evet | Evet | VP9 video kod çözücü, Opus ses kod çözücü |
+| **AVI** | Evet | Evet | MPEG-4 video kod çözücü, MP3 ses kod çözücü |
+| **MOV** | Evet | Evet | Apple QuickTime uyumlu kapsayıcı |
+| **GIF (Videodan)** | Evet | Evet | İki geçişli Lanczos palettegen / paletteuse animasyonlu GIF |
+
+### Ses Formatları
+
+| Format | Okuma | Yazma | Notlar |
+| :--- | :---: | :---: | :--- |
+| **MP3** | Evet | Evet | Yüksek kaliteli LAME kodlayıcı (320 kbps'ye kadar) |
+| **WAV** | Evet | Evet | Sıkıştırılmamış 16-bit PCM |
+| **FLAC** | Evet | Evet | Kayıpsız ses sıkıştırması |
+| **AAC** | Evet | Evet | Yerel AAC kodlayıcı |
+| **M4A** | Evet | Evet | MPEG-4 ses kapsayıcısı içinde AAC |
+| **OGG** | Evet | Evet | Vorbis ses kodlayıcı |
+
+---
+
+## Windows Explorer Sağ Tık Menü Entegrasyonu
+
+ForChange, Windows Explorer'ın sağ tık basamaklı menüsüne entegre olur. Böylece arayüz açmaya gerek kalmadan dosyaları tek tıkla dönüştürebilirsiniz.
+
+### Mimari Yaklaşım
+
+Kayıt defteri kayıtları `Software\Classes\SystemFileAssociations` altında oluşturulur. Bu yaklaşım:
+- VLC, Media Player veya Windows Fotoğraflar gibi varsayılan uygulamaların ayarlarını **asla bozmaz**.
+- Windows 10 ve Windows 11 üzerinde sorunsuz görünür.
+- Video dosyaları için çift katmanlı kayıt içerir (genel `video\shell` ve dosya uzantısına özel anahtarlar).
 
 ### Menü Kapsamı
 
-| Dosya Türü | Uzantılar | Alt Menü Seçenekleri |
+| Hedef Kategori | İzlenen Uzantılar | Mevcut Alt Menü İşlemleri |
 | :--- | :--- | :--- |
-| **Görüntü** | Tüm görüntü dosyaları | PNG, JPG, BMP, GIF, ICO'ya Dönüştür, GUI ile Dönüştür... |
-| **Video** | `.mp4` `.mkv` `.avi` `.mov` `.webm` | MP4, WEBM, MKV, MP3 (Ses), GIF'e Dönüştür, GUI ile Dönüştür... |
-| **Ses** | Tüm ses dosyaları | MP3, WAV, M4A, FLAC'a Dönüştür, GUI ile Dönüştür... |
-
-> **Teknik not:** Video uzantıları maksimum uyumluluk için **iki** ayrı registry girişi alır:
-> - `SystemFileAssociations\video\shell\` — PerceivedType tabanlı, tüm video dosyalarını genel olarak kapsar
-> - `SystemFileAssociations\.mp4\shell\` (uzantı bazlı) — `.mp4` ilişkisine hangi uygulamanın sahip olduğundan bağımsız olarak çalışır
+| **Görüntüler** | `.png`, `.jpg`, `.jpeg`, `.bmp`, `.gif`, `.tiff`, `.ico` | PNG, JPG, BMP, GIF, ICO'ya Dönüştür, GUI ile Aç |
+| **Videolar** | `.mp4`, `.mkv`, `.avi`, `.mov`, `.webm` | MP4, WEBM, MKV, MP3 (Ses), GIF'e Dönüştür, GUI ile Aç |
+| **Sesler** | `.mp3`, `.wav`, `.aac`, `.flac`, `.ogg`, `.m4a` | MP3, WAV, M4A, FLAC'a Dönüştür, GUI ile Aç |
 
 ---
 
-## 🛠️ Kurulum & Derleme
+## Komut Satırı Arayüzü (CLI)
+
+Tüm binary'ler betikler ve toplu işlemler için konsol modunu destekler:
+
+```bash
+# Görseli PNG formatına dönüştürme
+ForChange_Classic.exe -i girdi.jpg -f png
+
+# Özel kalite katsayısıyla JPEG'e dönüştürme
+ForChange_Classic.exe -i foto.png -o cikti.jpg -f jpg -q 92
+
+# Görselden 256x256 Windows ikonu oluşturma
+ForChange_Classic.exe -i logo.png -o logo.ico -f ico -q 256
+
+# Videoyu MP4 formatına dönüştürme
+ForChange_Modern.exe -i kayit.mkv -f mp4
+
+# Videodaki ses akışını MP3 olarak kaydetme
+ForChange_Classic.exe -i sunum.mp4 -o sunum.mp3 -f mp3 -q 85
+
+# Sesi kayıpsız FLAC formatına dönüştürme
+ForChange_Classic.exe -i muzik.wav -f flac
+```
+
+### CLI Parametreleri
+
+| Bayrak | Parametre | Açıklama | Zorunlu | Varsayılan |
+| :--- | :--- | :--- | :---: | :--- |
+| `-i` | `<dosya_yolu>` | Kaynak medya dosyasının yolu | Evet | Yok |
+| `-o` | `<dosya_yolu>` | Hedef dosya yolu (belirtilmezse otomatik üretilir) | Hayır | Kaynak dosya ile aynı dizin |
+| `-f` | `<format>` | Hedef format adı (png, jpg, mp4, webm, mp3 vb.) | Evet | Yok |
+| `-q` | `<değer>` | Kodlama kalite faktörü (1–100) veya İkon boyutu (16–256) | Hayır | `80` (ICO için `256`) |
+
+---
+
+## Kaynak Koddan Derleme
 
 ### Gereksinimler
-- [Go (Golang)](https://go.dev/) 1.23 veya üstü
-- [Node.js](https://nodejs.org/) & `npm` *(Yalnızca Modern sürüm için)*
-- [Wails CLI](https://wails.io/docs/gettingstarted/installation) *(Yalnızca Modern sürüm için)*
-- [Inno Setup 6](https://jrsoftware.org/isinfo.php) *(Yükleyici oluşturmak için)*
+
+- Go (Golang) 1.23 veya üzeri
+- Node.js 18+ ve `npm` *(Yalnızca Modern sürüm için)*
+- Wails CLI v2 *(Yalnızca Modern sürüm için)*
+- Inno Setup 6 *(İsteğe bağlı, yükleyici kurulum dosyası üretmek için)*
+- UPX 5.x *(İsteğe bağlı, binary sıkıştırması için)*
 
 ### Derleme Adımları
 
-1. **Repoyu klonlayın:**
+1. **Depoyu klonlayın:**
    ```bash
    git clone https://github.com/tommyvercetti89/ForChange.git
    cd ForChange
    ```
 
-2. **Klasik Sürümü Derleyin:**
+2. **Klasik Sürümü Derleyin (Lightweight):**
    ```bash
-   # Kaynakları yeniden oluşturun (manifest ve ikon)
-   rsrc -manifest main.manifest -ico assets/logo.ico -o rsrc.syso
-
-   # Çalıştırılabilir dosyayı derleyin
-   go build -ldflags="-s -w -H windowsgui" -o ForChange.exe .
+   go build -ldflags="-s -w -H windowsgui" -o ForChange_Classic.exe .
    ```
 
-3. **Modern Sürümü Derleyin:**
+3. **Klasik Sürümü Derleyin (FFmpeg Gömülü / Standalone):**
+   ```bash
+   go build -tags embed_ffmpeg -ldflags="-s -w -H windowsgui" -o ForChange_Classic_Standalone.exe .
+   ```
+
+4. **Modern Sürümü Derleyin (Lightweight):**
+   ```bash
+   cd modern/frontend && npm install && npm run build && cd ..
+   go build -tags "desktop,production" -ldflags="-w -s -H windowsgui" -o ..\ForChange_Modern.exe .
+   cd ..
+   ```
+
+5. **Modern Sürümü Derleyin (FFmpeg Gömülü / Standalone):**
    ```bash
    cd modern
-   wails build -platform windows/amd64 -o ForChangeModern.exe
+   go build -tags "desktop,production,embed_ffmpeg" -ldflags="-w -s -H windowsgui" -o ..\ForChange_Modern_Standalone.exe .
    cd ..
-
-   # Binary'yi kök klasöre kopyalayın
-   Copy-Item "modern\build\bin\ForChangeModern.exe" -Destination "ForChangeModern.exe" -Force
    ```
 
-4. **Yükleyicileri Oluşturun** *(Inno Setup 6 gerekir)*:
+6. **UPX ile Sıkıştırma (İsteğe bağlı):**
    ```bash
-   # Klasik yükleyici
-   & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup.iss
+   upx --best --lzma ForChange_Classic.exe ForChange_Modern.exe ForChange_Classic_Standalone.exe ForChange_Modern_Standalone.exe
+   ```
 
-   # Modern yükleyici
+7. **Yükleyicileri Üretin:**
+   ```bash
+   & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup.iss
    & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup_modern.iss
    ```
 
-   Yükleyiciler `dist/` klasörüne yerleştirilir:
-   - `dist/QBSoft_ForChange_Setup.exe`
-   - `dist/QBSoft_ForChangeModern_Setup.exe`
-
 ---
 
-## 💻 Kullanım
-
-### 🎨 Grafik Mod (GUI)
-GUI'yi başlatmak için `ForChange.exe` veya `ForChangeModern.exe`'yi herhangi bir bayrak olmadan çalıştırın.
-
-- **Dosya Ekle** — Sürükle & bırak veya dosya seçici kullanın
-- **Hedef Konum** — Kaynak dosyanın yanına kaydet veya özel çıktı dizini seç
-- **ICO Boyutu** — ICO formatı hedeflendiğinde Kalite alanı boyut seçiciye dönüşür (16–256 px)
-
-### 💻 Komut Satırı Modu (CLI)
-Her iki binary de başsız CLI kullanımını destekler:
-
-```bash
-# Görüntüyü PNG'ye dönüştür
-ForChange.exe -i fotograf.jpg -f png
-
-# Görüntüyü %90 kaliteyle JPG'ye dönüştür
-ForChange.exe -i fotograf.png -o cikti.jpg -f jpg -q 90
-
-# Görüntüyü 128px Windows ikonuna dönüştür
-ForChange.exe -i logo.png -o logo.ico -f ico -q 128
-
-# Videoyu MP4'e dönüştür
-ForChange.exe -i video.mkv -f mp4
-
-# Videoyu WEBM'e dönüştür
-ForChange.exe -i video.mp4 -f webm
-
-# Videodan MP3 olarak ses çıkar
-ForChange.exe -i video.mp4 -f mp3
-
-# Sesi FLAC'a dönüştür
-ForChange.exe -i muzik.mp3 -f flac
-
-# Sesi WAV'a dönüştür
-ForChange.exe -i podcast.m4a -f wav
-```
-
-#### Kullanılabilir CLI Bayrakları
-
-| Bayrak | Açıklama | Zorunlu |
-| :--- | :--- | :---: |
-| `-i` | Girdi dosya yolu | ✅ |
-| `-o` | Çıktı dosya yolu | ❌ |
-| `-f` | Hedef format (yukarıdaki tablolara bakın) | ✅ |
-| `-q` | Kalite `1–100` (JPEG) veya boyut `16–256` (ICO) | ❌ |
-
----
-
-## 📁 Proje Yapısı
+## Proje Yapısı
 
 ```
 ForChange/
-├── main.go                  # Giriş noktası — CLI yönlendirme & GUI yedek
+├── main.go                          # Ana giriş noktası — CLI yönlendirme ve GUI başlatma
+├── main.manifest                    # Windows Common Controls manifest dosyası
 ├── cli/
-│   └── cli.go               # Başsız dönüşüm mantığı
+│   └── cli.go                       # Başsız (headless) CLI yürütme mantığı
 ├── converter/
-│   ├── converter.go         # Görüntü dönüşüm motoru
-│   ├── media.go             # Video & ses dönüşümü (FFmpeg wrapper)
-│   └── ffmpeg_embed.go      # Gömülü FFmpeg binary
+│   ├── converter.go                 # Saf Go görsel işleme ve format yönlendirici
+│   ├── media.go                     # Video ve ses kodlama motoru (FFmpeg sarmalayıcı)
+│   ├── ffmpeg.go                    # FFmpeg tespit, çıkarma ve bütünlük doğrulama
+│   ├── ffmpeg_embedded.go           # Gömülü FFmpeg yönergesi (-tags embed_ffmpeg)
+│   └── ffmpeg_noembed.go            # Harici FFmpeg derlemeleri için taslak yönerge
 ├── gui/
-│   └── gui.go               # Klasik Win32 GUI (Walk)
+│   └── gui.go                       # Yerel Win32 klasik arayüz (Walk)
 ├── modern/
-│   ├── main.go              # Wails uygulama giriş noktası
-│   ├── app.go               # Go backend bağlamaları
-│   └── frontend/            # Web arayüzü (HTML/CSS/JS)
-├── assets/                  # İkonlar ve görseller
-├── setup.iss                # Inno Setup scripti — Klasik sürüm
-├── setup_modern.iss         # Inno Setup scripti — Modern sürüm
-└── dist/                    # Oluşturulan yükleyiciler (git-ignored)
+│   ├── main.go                      # Wails v2 masaüstü giriş noktası
+│   ├── app.go                       # Go-JS köprü metodları ve dosya iletişim pencereleri
+│   ├── wails.json                   # Wails proje yapılandırması
+│   └── frontend/                    # Web arayüzü (HTML5, Vanilla CSS, ES modülleri, Vite)
+├── assets/                          # Uygulama ikonları ve marka görselleri
+├── setup.iss                        # Inno Setup yapılandırması — Klasik Sürüm
+└── setup_modern.iss                 # Inno Setup yapılandırması — Modern Sürüm
 ```
 
 ---
 
-## 📋 Değişiklik Geçmişi
+## Güvenlik ve Gizlilik
 
-### Son Değişiklikler
-- **Video sağ tık menüsü düzeltildi** — `.mp4`, `.mkv`, `.avi`, `.mov`, `.webm` dosyalarına sağ tıklandığında artık **ForChange Converter** alt menüsü Windows Explorer'da doğru şekilde görünüyor. Daha önce kullanılan `.ext\shell\` registry yolu diğer uygulamalar tarafından geçersiz kılınıyordu; şimdi doğru `SystemFileAssociations\.ext\shell\` yaklaşımı kullanılıyor.
-- **Tam video format desteği** — Gömülü FFmpeg aracılığıyla MP4, MKV, AVI, MOV, WEBM dönüşümü eklendi
-- **Videodan ses çıkarma** — Herhangi bir video dosyasını doğrudan MP3'e dönüştür
-- **Videodan animasyonlu GIF** — Video kliplerini animasyonlu GIF olarak çıkar ve dönüştür
-- **Ses dönüşümü** — MP3 ↔ WAV ↔ M4A ↔ FLAC ↔ AAC ↔ OGG
+- **Sıfır Telemetri:** ForChange hiçbir analiz, telemetri veya uzaktan bağlantı kodu içermez.
+- **Yerel İşleme:** Medya çözme, dönüştürme ve kodlama işlemlerinin %100'ü yerel olarak kendi bilgisayarınızda gerçekleşir.
+- **Güvenli Kayıt Defteri:** Sağ tık entegrasyonu sistem standartlarına tam uyumludur ve kaldırıldığında kayıt defterinde artık bırakmaz.
 
 ---
 
-## 🤝 İş Birliği & Katkılar
-Bu proje, **tommyvercetti89** tarafından Google DeepMind ekibinin tasarladığı güçlü bir ajansal yapay zeka kodlama asistanı olan **Antigravity** ile çift programlama iş birliğiyle geliştirilmiştir.
+## Katkı ve Teşekkür
+
+Bu proje, Google DeepMind ekibi tarafından tasarlanan gelişmiş ajansal yapay zeka kodlama asistanı **Antigravity** ile **tommyvercetti89**'un çift programlama iş birliğiyle geliştirilmiştir.
 
 ---
 
-## ⚖️ Lisans
-MIT Lisansı kapsamında dağıtılmaktadır. Daha fazla ayrıntı için `LICENSE` dosyasına bakın.
+## Lisans
+
+Bu proje [MIT Lisansı](LICENSE) kapsamında lisanslanmıştır.
