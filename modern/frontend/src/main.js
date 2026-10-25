@@ -4,6 +4,20 @@ import './app.css';
 // Import Go backend methods from Wails bindings
 import { SelectFiles, SelectFolder, GetFileInfo, ConvertFile, GetInitialFiles } from '../wailsjs/go/main/App';
 
+// Global error handler to catch and display any unexpected runtime errors
+window.onerror = function (msg, url, lineNo, columnNo, error) {
+    console.error('Frontend error:', msg, 'at line', lineNo, error);
+    const sb = document.getElementById('status-bar');
+    if (sb) {
+        sb.innerText = `JS Error: ${msg}`;
+    }
+    return false;
+};
+
+// SVG Definitions for Themes (declared before function calls)
+const moonSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+const sunSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+
 // Application State
 let fileList = [];
 let isConverting = false;
@@ -33,23 +47,24 @@ const resolutionGroup = document.getElementById('resolution-group');
 const videoResolutionSelect = document.getElementById('video-resolution');
 
 // 1. Theme Management
+function updateThemeIcon(theme) {
+    if (themeIcon) {
+        themeIcon.innerHTML = theme === 'dark' ? moonSvg : sunSvg;
+    }
+}
+
 const savedTheme = localStorage.getItem('theme') || 'dark';
 htmlEl.setAttribute('data-theme', savedTheme);
 updateThemeIcon(savedTheme);
 
-themeToggleBtn.addEventListener('click', () => {
-    const currentTheme = htmlEl.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    htmlEl.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-    updateThemeIcon(newTheme);
-});
-
-const moonSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
-const sunSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
-
-function updateThemeIcon(theme) {
-    themeIcon.innerHTML = theme === 'dark' ? moonSvg : sunSvg;
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => {
+        const currentTheme = htmlEl.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        htmlEl.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme);
+    });
 }
 
 // 2. Format Selection Logic (Dynamic Label, Slider Settings & Auto-filtering)
