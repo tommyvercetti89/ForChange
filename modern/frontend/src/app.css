@@ -282,6 +282,10 @@ body {
     box-shadow: 0 4px 15px var(--accent-glow);
     transition: transform 0.2s, filter 0.2s, box-shadow 0.2s;
     margin-top: auto; /* Push to bottom of control panel */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 .primary-btn:hover {
@@ -292,6 +296,21 @@ body {
 
 .primary-btn:active {
     transform: translateY(0);
+}
+
+.primary-btn .btn-icon {
+    flex-shrink: 0;
+}
+
+.spinner-svg {
+    animation: rotate 1s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes rotate {
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .secondary-btn {
@@ -312,17 +331,28 @@ body {
 }
 
 .text-btn {
-    background: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
     border: none;
     color: var(--accent-primary);
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 500;
     cursor: pointer;
-    transition: opacity 0.2s;
+    padding: 4px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    transition: background-color 0.2s, opacity 0.2s;
 }
 
 .text-btn:hover {
-    opacity: 0.8;
+    background-color: var(--bg-hover);
+    opacity: 0.9;
+}
+
+.text-btn svg {
+    flex-shrink: 0;
 }
 
 .danger-text {
@@ -412,16 +442,20 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
+    gap: 12px;
 }
 
 .list-header h3 {
     font-size: 14px;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 .list-actions {
     display: flex;
-    gap: 12px;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
 }
 
 .table-wrapper {
@@ -437,6 +471,7 @@ body {
     border-collapse: collapse;
     font-size: 12px;
     text-align: left;
+    table-layout: fixed;
 }
 
 .file-table th {
@@ -448,16 +483,23 @@ body {
     top: 0;
     z-index: 1;
     border-bottom: 1px solid var(--border-color);
-}
-
-.file-table td {
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text-primary);
-    max-width: 180px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.file-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+
+.file-table td.col-name {
+    font-weight: 500;
 }
 
 .file-table tbody tr:hover {
@@ -466,6 +508,30 @@ body {
 
 .text-right {
     text-align: right;
+}
+
+.remove-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    color: var(--danger-color);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 3px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    transition: background-color 0.2s;
+}
+
+.remove-btn:hover {
+    background-color: rgba(255, 59, 59, 0.12);
+}
+
+.remove-btn svg {
+    flex-shrink: 0;
 }
 
 /* Badges for Status */

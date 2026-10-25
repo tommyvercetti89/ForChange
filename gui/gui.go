@@ -125,13 +125,13 @@ func Run(initialFiles []string) {
 						Layout: HBox{Margins: Margins{Left: 6, Top: 6, Right: 6, Bottom: 6}, Spacing: 4},
 						Children: []Widget{
 							PushButton{
-								Text: "➕ Add",
+								Text: "&Add...",
 								OnClicked: func() {
 									addFiles(mainWindow, model, statusLabel, formatComboBox, &currentFormats)
 								},
 							},
 							PushButton{
-								Text: "➖ Remove",
+								Text: "&Remove",
 								OnClicked: func() {
 									idx := tableView.CurrentIndex()
 									if idx >= 0 && idx < len(model.items) {
@@ -143,7 +143,7 @@ func Run(initialFiles []string) {
 								},
 							},
 							PushButton{
-								Text: "🗑 Clear",
+								Text: "&Clear",
 								OnClicked: func() {
 									model.items = nil
 									model.PublishRowsReset()
@@ -201,7 +201,7 @@ func Run(initialFiles []string) {
 						},
 					},
 					PushButton{
-						Text: "⚡ Convert All",
+						Text: "Convert All",
 						OnClicked: func() {
 							idx := formatComboBox.CurrentIndex()
 							if idx < 0 || idx >= len(currentFormats) {

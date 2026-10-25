@@ -51,10 +51,10 @@ func main() {
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title:         "ForChange Modern",
-		Width:         720,
-		Height:        560,
-		MinWidth:      720,
-		MinHeight:     560,
+		Width:         880,
+		Height:        600,
+		MinWidth:      800,
+		MinHeight:     540,
 		DisableResize: false,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
