@@ -49,9 +49,110 @@ function updateThemeIcon(theme) {
     themeIcon.innerText = theme === 'dark' ? '🌙' : '☀️';
 }
 
-// 2. Format Selection Logic (Dynamic Label & Slider Settings)
+// 2. Format Selection Logic (Dynamic Label, Slider Settings & Auto-filtering)
 const videoFormats = ['MP4', 'MKV', 'AVI', 'MOV', 'WEBM', 'GIF_VIDEO'];
 const audioFormats = ['MP3', 'WAV', 'AAC', 'FLAC', 'OGG', 'M4A'];
+
+const allFormatGroups = {
+    images: {
+        label: 'Images',
+        formats: [
+            { value: 'PNG', label: 'PNG' },
+            { value: 'JPEG', label: 'JPEG' },
+            { value: 'GIF', label: 'GIF (Image)' },
+            { value: 'BMP', label: 'BMP' },
+            { value: 'TIFF', label: 'TIFF' },
+            { value: 'ICO', label: 'ICO' },
+        ]
+    },
+    videos: {
+        label: 'Videos',
+        formats: [
+            { value: 'MP4', label: 'MP4' },
+            { value: 'MKV', label: 'MKV' },
+            { value: 'AVI', label: 'AVI' },
+            { value: 'MOV', label: 'MOV' },
+            { value: 'WEBM', label: 'WEBM' },
+            { value: 'GIF_VIDEO', label: 'GIF (from Video)' },
+        ]
+    },
+    audios: {
+        label: 'Audios',
+        formats: [
+            { value: 'MP3', label: 'MP3' },
+            { value: 'WAV', label: 'WAV' },
+            { value: 'AAC', label: 'AAC' },
+            { value: 'FLAC', label: 'FLAC' },
+            { value: 'OGG', label: 'OGG' },
+            { value: 'M4A', label: 'M4A' },
+        ]
+    }
+};
+
+const imageExts = ['PNG', 'JPG', 'JPEG', 'GIF', 'BMP', 'TIFF', 'TIF', 'WEBP', 'ICO'];
+const videoExts = ['MP4', 'MKV', 'AVI', 'MOV', 'WEBM', 'FLV', 'WMV', 'M4V', '3GP'];
+const audioExts = ['MP3', 'WAV', 'AAC', 'FLAC', 'OGG', 'M4A', 'WMA', 'OPUS'];
+
+function updateAvailableFormats() {
+    let hasImage = false;
+    let hasVideo = false;
+    let hasAudio = false;
+
+    fileList.forEach(f => {
+        const fmt = (f.format || '').toUpperCase();
+        if (imageExts.includes(fmt)) hasImage = true;
+        else if (videoExts.includes(fmt)) hasVideo = true;
+        else if (audioExts.includes(fmt)) hasAudio = true;
+    });
+
+    let allowedGroups = ['images', 'videos', 'audios'];
+    let defaultFormat = 'JPEG';
+
+    if (fileList.length > 0) {
+        if (hasImage && !hasVideo && !hasAudio) {
+            allowedGroups = ['images'];
+            defaultFormat = 'JPEG';
+        } else if (hasVideo && !hasImage && !hasAudio) {
+            allowedGroups = ['videos', 'audios'];
+            defaultFormat = 'MP4';
+        } else if (hasAudio && !hasImage && !hasVideo) {
+            allowedGroups = ['audios'];
+            defaultFormat = 'MP3';
+        } else if (hasVideo && hasAudio && !hasImage) {
+            allowedGroups = ['audios'];
+            defaultFormat = 'MP3';
+        }
+    }
+
+    const currentVal = targetFormatSelect.value;
+    targetFormatSelect.innerHTML = '';
+
+    let isCurrentValAvailable = false;
+    allowedGroups.forEach(grpKey => {
+        const grp = allFormatGroups[grpKey];
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = grp.label;
+        grp.formats.forEach(f => {
+            const opt = document.createElement('option');
+            opt.value = f.value;
+            opt.innerText = f.label;
+            if (f.value === currentVal) {
+                isCurrentValAvailable = true;
+            }
+            optgroup.appendChild(opt);
+        });
+        targetFormatSelect.appendChild(optgroup);
+    });
+
+    if (isCurrentValAvailable) {
+        targetFormatSelect.value = currentVal;
+    } else {
+        targetFormatSelect.value = defaultFormat;
+    }
+
+    // Trigger change event to sync resolution and quality sliders
+    targetFormatSelect.dispatchEvent(new Event('change'));
+}
 
 targetFormatSelect.addEventListener('change', () => {
     const format = targetFormatSelect.value;
@@ -169,6 +270,8 @@ function formatBytes(bytes) {
 function renderFileList() {
     fileTableBody.innerHTML = '';
     fileCountSpan.innerText = fileList.length;
+
+    updateAvailableFormats();
 
     if (fileList.length === 0) {
         dropZone.style.display = 'flex';

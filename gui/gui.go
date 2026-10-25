@@ -48,6 +48,20 @@ func (m *ImageModel) Value(row, col int) interface{} {
 	return nil
 }
 
+var (
+	allFormats = []string{
+		"PNG", "JPEG", "GIF", "BMP", "TIFF", "ICO",
+		"MP4", "MKV", "AVI", "MOV", "WEBM", "GIF (Video)",
+		"MP3", "WAV", "AAC", "FLAC", "OGG", "M4A",
+	}
+	imageFormats = []string{"PNG", "JPEG", "GIF", "BMP", "TIFF", "ICO"}
+	videoFormats = []string{
+		"MP4", "MKV", "AVI", "MOV", "WEBM", "GIF (Video)",
+		"MP3", "WAV", "AAC", "FLAC", "OGG", "M4A",
+	}
+	audioFormats = []string{"MP3", "WAV", "AAC", "FLAC", "OGG", "M4A"}
+)
+
 // Run starts the 7-Zip styled native Windows GUI
 func Run(initialFiles []string) {
 	var mainWindow *walk.MainWindow
@@ -64,11 +78,7 @@ func Run(initialFiles []string) {
 	var browseDestBtn *walk.PushButton
 
 	model := &ImageModel{items: make([]*ImageFile, 0)}
-	formats := []string{
-		"PNG", "JPEG", "GIF", "BMP", "TIFF", "ICO",
-		"MP4", "MKV", "AVI", "MOV", "WEBM", "GIF (Video)",
-		"MP3", "WAV", "AAC", "FLAC", "OGG", "M4A",
-	}
+	currentFormats := allFormats
 
 	err := MainWindow{
 		AssignTo: &mainWindow,
@@ -82,7 +92,7 @@ func Run(initialFiles []string) {
 				Items: []MenuItem{
 					Action{
 						Text:        "&Add Files...",
-						OnTriggered: func() { addFiles(mainWindow, model, statusLabel) },
+						OnTriggered: func() { addFiles(mainWindow, model, statusLabel, formatComboBox, &currentFormats) },
 					},
 					Separator{},
 					Action{
@@ -117,7 +127,7 @@ func Run(initialFiles []string) {
 							PushButton{
 								Text: "➕ Add",
 								OnClicked: func() {
-									addFiles(mainWindow, model, statusLabel)
+									addFiles(mainWindow, model, statusLabel, formatComboBox, &currentFormats)
 								},
 							},
 							PushButton{
@@ -128,6 +138,7 @@ func Run(initialFiles []string) {
 										model.items = append(model.items[:idx], model.items[idx+1:]...)
 										model.PublishRowsReset()
 										updateStatus(model, statusLabel)
+										updateFormatComboBox(model, formatComboBox, &currentFormats)
 									}
 								},
 							},
@@ -137,6 +148,7 @@ func Run(initialFiles []string) {
 									model.items = nil
 									model.PublishRowsReset()
 									updateStatus(model, statusLabel)
+									updateFormatComboBox(model, formatComboBox, &currentFormats)
 								},
 							},
 						},
@@ -148,13 +160,14 @@ func Run(initialFiles []string) {
 							Label{Text: "Format:"},
 							ComboBox{
 								AssignTo:     &formatComboBox,
-								Model:        formats,
+								Model:        currentFormats,
 								CurrentIndex: 1, // Default is JPEG
 								OnCurrentIndexChanged: func() {
-									if formatComboBox.CurrentIndex() < 0 {
+									idx := formatComboBox.CurrentIndex()
+									if idx < 0 || idx >= len(currentFormats) {
 										return
 									}
-									fmtStr := formats[formatComboBox.CurrentIndex()]
+									fmtStr := currentFormats[idx]
 									if fmtStr == "ICO" {
 										qualityLabel.SetText("Size (px):")
 										qualityEdit.SetRange(16.0, 256.0)
@@ -190,7 +203,12 @@ func Run(initialFiles []string) {
 					PushButton{
 						Text: "⚡ Convert All",
 						OnClicked: func() {
-							target := formats[formatComboBox.CurrentIndex()]
+							idx := formatComboBox.CurrentIndex()
+							if idx < 0 || idx >= len(currentFormats) {
+								walk.MsgBox(mainWindow, "ForChange", "Please select a target format.", walk.MsgBoxIconWarning)
+								return
+							}
+							target := currentFormats[idx]
 							quality := int(qualityEdit.Value())
 							useSource := useSourceFolderCB.Checked()
 							var destDir string
@@ -279,12 +297,13 @@ func Run(initialFiles []string) {
 	}
 	model.PublishRowsReset()
 	updateStatus(model, statusLabel)
+	updateFormatComboBox(model, formatComboBox, &currentFormats)
 
 	mainWindow.Run()
 }
 
 // addFiles shows multiple file picker to select input files
-func addFiles(parent *walk.MainWindow, model *ImageModel, statusLabel *walk.StatusBarItem) {
+func addFiles(parent *walk.MainWindow, model *ImageModel, statusLabel *walk.StatusBarItem, formatComboBox *walk.ComboBox, currentFormats *[]string) {
 	dlg := walk.FileDialog{
 		Title:  "Select Media Files to Convert",
 		Filter: "All Supported Media Files (*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.tiff;*.webp;*.ico;*.mp4;*.mkv;*.avi;*.mov;*.webm;*.mp3;*.wav;*.aac;*.flac;*.ogg;*.m4a)|*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.tiff;*.webp;*.ico;*.mp4;*.mkv;*.avi;*.mov;*.webm;*.mp3;*.wav;*.aac;*.flac;*.ogg;*.m4a|Image Files (*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.tiff;*.webp;*.ico)|*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.tiff;*.webp;*.ico|Video Files (*.mp4;*.mkv;*.avi;*.mov;*.webm)|*.mp4;*.mkv;*.avi;*.mov;*.webm|Audio Files (*.mp3;*.wav;*.aac;*.flac;*.ogg;*.m4a)|*.mp3;*.wav;*.aac;*.flac;*.ogg;*.m4a|All Files (*.*)|*.*",
@@ -301,6 +320,7 @@ func addFiles(parent *walk.MainWindow, model *ImageModel, statusLabel *walk.Stat
 
 	model.PublishRowsReset()
 	updateStatus(model, statusLabel)
+	updateFormatComboBox(model, formatComboBox, currentFormats)
 }
 
 // addFileByPath parses a file path and adds it to the table list
@@ -380,4 +400,82 @@ func convertAll(parent *walk.MainWindow, model *ImageModel, targetFormat string,
 			fmt.Sprintf("Conversion finished!\nSuccess: %d\nFailed: %d", successCount, failCount),
 			walk.MsgBoxIconInformation)
 	})
+}
+
+// updateFormatComboBox dynamically filters available formats based on files in the queue
+func updateFormatComboBox(model *ImageModel, formatComboBox *walk.ComboBox, currentFormats *[]string) {
+	if formatComboBox == nil {
+		return
+	}
+
+	var hasImage, hasVideo, hasAudio bool
+	for _, item := range model.items {
+		t := converter.GetFileType(item.Path)
+		switch t {
+		case "image":
+			hasImage = true
+		case "video":
+			hasVideo = true
+		case "audio":
+			hasAudio = true
+		}
+	}
+
+	var newFormats []string
+	var defaultIndex int
+
+	if len(model.items) == 0 {
+		newFormats = allFormats
+		defaultIndex = 1 // JPEG
+	} else if hasImage && !hasVideo && !hasAudio {
+		newFormats = imageFormats
+		defaultIndex = 1 // JPEG
+	} else if hasVideo && !hasImage && !hasAudio {
+		newFormats = videoFormats
+		defaultIndex = 0 // MP4
+	} else if hasAudio && !hasImage && !hasVideo {
+		newFormats = audioFormats
+		defaultIndex = 0 // MP3
+	} else if hasVideo && hasAudio && !hasImage {
+		newFormats = audioFormats
+		defaultIndex = 0 // MP3
+	} else {
+		newFormats = allFormats
+		defaultIndex = 0
+	}
+
+	// Check if the format list is already identical
+	if len(*currentFormats) == len(newFormats) {
+		same := true
+		for i := range *currentFormats {
+			if (*currentFormats)[i] != newFormats[i] {
+				same = false
+				break
+			}
+		}
+		if same {
+			return
+		}
+	}
+
+	currentText := formatComboBox.Text()
+	*currentFormats = newFormats
+	formatComboBox.SetModel(newFormats)
+
+	newIdx := -1
+	for i, f := range newFormats {
+		if f == currentText {
+			newIdx = i
+			break
+		}
+	}
+	if newIdx >= 0 {
+		formatComboBox.SetCurrentIndex(newIdx)
+	} else {
+		if defaultIndex < len(newFormats) {
+			formatComboBox.SetCurrentIndex(defaultIndex)
+		} else {
+			formatComboBox.SetCurrentIndex(0)
+		}
+	}
 }
